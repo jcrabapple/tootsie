@@ -327,7 +327,7 @@
     <string name="sk_advanced_options_show">Mostrar opções avançadas</string>
     <string name="sk_advanced_options_hide">Ocultar opções avançadas</string>
     <string name="sk_spoiler_show">Mostrar conteúdo</string>
-    <string name="sk_pronouns_label">Pronomes</string>
+    <string name="sk_pronouns_label">Linguagem pessoal</string>
     <string name="sk_settings_instance">Instância</string>
     <string name="sk_switch_timeline">Alternar linha do tempo</string>
     <string name="sk_settings_true_black">Modo preto</string>
@@ -360,9 +360,9 @@
     <string name="sk_settings_continues_playback_summary">Permitir que a mídia já reproduzida continue sendo reproduzida, sobrepondo a nova reprodução</string>
     <string name="sk_settings_unifiedpush_no_distributor">Nenhum distribuidor encontrado</string>
     <string name="sk_settings_unifiedpush">Usar UnifiedPush</string>
-    <string name="sk_settings_display_pronouns_in_timelines">Exibir pronomes em linhas do tempo</string>
-    <string name="sk_settings_display_pronouns_in_threads">Exibir pronomes em tópicos</string>
-    <string name="sk_settings_display_pronouns_in_user_listings">Exibir pronomes nas listas de usuários</string>
+    <string name="sk_settings_display_pronouns_in_timelines">Exibir linguagem pessoal em linhas do tempo</string>
+    <string name="sk_settings_display_pronouns_in_threads">Exibir linguagem pessoal em tópicos</string>
+    <string name="sk_settings_display_pronouns_in_user_listings">Exibir linguagem pessoal nas listas de usuários</string>
     <string name="sk_tab_notifications">Notificações</string>
     <string name="sk_tab_profile">Perfil</string>
     <string name="sk_notification_mention">Você foi mencionado por %s</string>
