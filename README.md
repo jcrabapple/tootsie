@@ -1,4 +1,6 @@
-# ![MoshidonLogo](mastodon/src/main/res/mipmap-xhdpi/ic_launcher_round.png) Moshidon, the material you mastodon client!
+<img src="mastodon/src/main/ic_launcher-playstore.png" alt="Moshidon Logo" width="200" height="200">
+
+## Moshidon, the material you mastodon client!
 
 ## This is the rewrite branch. Things probably won't as you expect here for a while
 
@@ -7,24 +9,27 @@
 
 ## Download Now
 
-<a href="https://play.google.com/store/apps/details?id=org.joinmastodon.android.moshinda"><img height="35" alt="Get it on Google Play" src="img/google-play-badge.png"></a> <a href="https://f-droid.org/pt_BR/packages/org.joinmastodon.android.moshinda"><img height="35" alt="Get it on F-Droid" src="img/f-droid-badge.png"></a> <a href="https://apt.izzysoft.de/fdroid/index/apk/org.joinmastodon.android.moshinda"><img height="35" alt="Get it on IzzyOnDroid" src="img/izzy-badge.png"></a>
+<a href="https://play.google.com/store/apps/details?id=org.joinmastodon.android.moshinda"><img width="200" alt="Get it on Google Play" src="img/google-play-badge.png"></a> 
+<a href="https://f-droid.org/pt_BR/packages/org.joinmastodon.android.moshinda"><img width="200" alt="Get it on F-Droid" src="https://f-droid.org/badge/get-it-on.png"></a> 
+<a href="https://apt.izzysoft.de/fdroid/index/apk/org.joinmastodon.android.moshinda"><img width="200" alt="Get it on IzzyOnDroid" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroidButtonGreyBorder_nofont.png"></a>
 
-[![GitHub Release Download](https://img.shields.io/badge/dynamic/json?color=282C37&label=Download%20APK&query=%24.tag_name&url=https%3A%2F%2Fapi.github.com%2Frepos%2FLucasGGamerM%2Fmoshidon%2Freleases%2Flatest&style=for-the-badge)](https://github.com/LucasGGamerM/moshidon/releases/latest/download/moshidon.apk) [![Translation status](https://translate.codeberg.org/widgets/moshidon/-/svg-badge.svg)](https://translate.codeberg.org/engage/moshidon/) [![GitHub Nightly Download](https://img.shields.io/badge/dynamic/json?color=282C37&label=Download%20Nightly%20APK&query=%24.tag_name&url=https%3A%2F%2Fapi.github.com%2Frepos%2FLucasGGamerM%2Fmoshidon%2Freleases%2Flatest&style=for-the-badge)](https://github.com/LucasGGamerM/moshidon-nightly/releases/latest/download/moshidon-nightly.apk) [![GitHub Nightly Build Download](https://github.com/LucasGGamerM/moshidon/actions/workflows/nightly-builds.yml/badge.svg)](https://github.com/LucasGGamerM/moshidon/actions/workflows/nightly-builds.yml)
+[![GitHub Release Download](https://img.shields.io/badge/dynamic/json?color=282C37&label=Download%20APK&query=%24.tag_name&url=https%3A%2F%2Fapi.github.com%2Frepos%2FLucasGGamerM%2Fmoshidon%2Freleases%2Flatest&style=for-the-badge)](https://github.com/LucasGGamerM/moshidon/releases/latest/download/moshidon.apk) [![Translation status](https://translate.codeberg.org/widgets/moshidon/-/svg-badge.svg)](https://translate.codeberg.org/engage/moshidon/) [![GitHub Nightly Download](https://img.shields.io/badge/dynamic/json?color=282C37&label=Download%20Nightly%20APK&query=%24.tag_name&url=https%3A%2F%2Fapi.github.com%2Frepos%2FLucasGGamerM%2Fmoshidon%2Freleases%2Flatest&style=for-the-badge)](https://github.com/LucasGGamerM/moshidon-nightly/releases/latest/download/moshidon-nightly.apk) 
+<!-- [![GitHub Nightly Build Download](https://github.com/LucasGGamerM/moshidon/actions/workflows/nightly-builds.yml/badge.svg)](https://github.com/LucasGGamerM/moshidon/actions/workflows/nightly-builds.yml) -->
 
 ## Donate
 
-<a href="https://github.com/sponsors/LucasGGamerM">Github Sponsors</a> | <a href="https://liberapay.com/LucasGGamerM/donate">Liberapay</a> | Monero Wallet Key: `4886mdarcyB6Yf8Qc6vDJBK1fz6ibHFLZUmHb4GZZz9yLGNhcG3XC64e5UZ8dVQYTLZb82W6P9WhteowW4STJEec97Gf22j`
+<a href="https://github.com/sponsors/LucasGGamerM"><img width="100" alt="Github Sponsors" src="https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86"></a> | <a href="https://liberapay.com/LucasGGamerM/donate"><img width="50" alt="Liberapay" src="https://github.com/liberapay/liberapay.com/blob/master/www/assets/liberapay/icon-v2_black-on-yellow.200.png"></a> | Monero Wallet Key: `4886mdarcyB6Yf8Qc6vDJBK1fz6ibHFLZUmHb4GZZz9yLGNhcG3XC64e5UZ8dVQYTLZb82W6P9WhteowW4STJEec97Gf22j`
 
-## Key Features
+<!-- ## Key Features
 
 [ screenshot of full timeline in default colour scheme ]
 [ screenshot of full timeline in an alt colour scheme ]
 [ screenshot of profile page ]
 [ screenshot of compose post window ]
-
+-->
 ### Flexible Timelines
 
-[ Home dropdown menu ]
+<!-- [ Home dropdown menu ] -->
 
 Under the Home menu by default you can see your active account's timeline, your server's local timeline, and your server's federated timeline. You can also pin hashtags, lists, other servers, or make a custom view of just your posts, your bookmarks, or your favourites for quick access. Then sort these timelines to prioritize the ones you visit most often.
 
@@ -32,7 +37,7 @@ Under the Home menu by default you can see your active account's timeline, your 
 
 Sign in to multiple accounts in the same app and easily switch between them. Press and hold on the boost or fave button to boost or fave a post to a different account than the one you are currently browsing with.
 
-[ boost icon pop up select profile ]
+<!-- [ boost icon pop up select profile ] -->
 
 ### Drafts & Scheduled Posts
 
@@ -42,8 +47,8 @@ Write posts and save them, or schedule them to post later. Edit and delete your 
 
 An unobtrusive ALT tag appears on images with alt text. Clicking on the icon makes the alt text appear. By default, Moshidon will show a warning to add alt text if your post has any attachments lacking alt text. This is for better accessibility, and it can be disabled in settings. You can also hide from your feed all posts that are lacking in alt text.
 
-[ image with alt text icon higlighted ]
-[ alt text expanded ]
+<!-- [ image with alt text icon higlighted ]
+[ alt text expanded ] -->
 
 ### Themes & Customization
 
