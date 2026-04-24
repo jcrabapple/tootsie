@@ -10,7 +10,7 @@
 ## Download Now
 
 <a href="https://play.google.com/store/apps/details?id=org.joinmastodon.android.moshinda"><img width="200" alt="Get it on Google Play" src="img/google-play-badge.png"></a> 
-<a href="https://f-droid.org/pt_BR/packages/org.joinmastodon.android.moshinda"><img width="200" alt="Get it on F-Droid" src="https://f-droid.org/badge/get-it-on.png"></a> 
+<a href="https://f-droid.org/en_US/packages/org.joinmastodon.android.moshinda"><img width="200" alt="Get it on F-Droid" src="https://f-droid.org/badge/get-it-on.png"></a> 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/org.joinmastodon.android.moshinda"><img width="200" alt="Get it on IzzyOnDroid" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroidButtonGreyBorder_nofont.png"></a>
 
 [![GitHub Release Download](https://img.shields.io/badge/dynamic/json?color=282C37&label=Download%20APK&query=%24.tag_name&url=https%3A%2F%2Fapi.github.com%2Frepos%2FLucasGGamerM%2Fmoshidon%2Freleases%2Flatest&style=for-the-badge)](https://github.com/LucasGGamerM/moshidon/releases/latest/download/moshidon.apk) [![Translation status](https://translate.codeberg.org/widgets/moshidon/-/svg-badge.svg)](https://translate.codeberg.org/engage/moshidon/) [![GitHub Nightly Download](https://img.shields.io/badge/dynamic/json?color=282C37&label=Download%20Nightly%20APK&query=%24.tag_name&url=https%3A%2F%2Fapi.github.com%2Frepos%2FLucasGGamerM%2Fmoshidon%2Freleases%2Flatest&style=for-the-badge)](https://github.com/LucasGGamerM/moshidon-nightly/releases/latest/download/moshidon-nightly.apk) 
