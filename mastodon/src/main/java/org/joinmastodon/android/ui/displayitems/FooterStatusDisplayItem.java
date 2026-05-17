@@ -332,7 +332,7 @@ public class FooterStatusDisplayItem extends StatusDisplayItem{
 				Bundle args=new Bundle();
 				args.putString("account", item.accountID);
 				Instance instance=AccountSessionManager.get(item.accountID).getInstance().get();
-				if(instance.isAkkoma() || instance.isIceshrimp()){
+				if(instance.isAkkoma() || instance.isIceshrimp() || (instance.supportsQuotePostAuthoring() && !(item.status.quoteApproval==null || item.status.quoteApproval.currentUser==QuoteApproval.CurrentUserPolicy.UNKNOWN || item.status.quoteApproval.currentUser==QuoteApproval.CurrentUserPolicy.DENIED))){
 					args.putParcelable("quote", Parcels.wrap(item.status));
 				}else{
 					StringBuilder prefilledText = new StringBuilder().append("\n\n");
