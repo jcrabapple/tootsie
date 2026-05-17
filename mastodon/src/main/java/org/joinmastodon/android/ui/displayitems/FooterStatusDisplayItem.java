@@ -318,7 +318,34 @@ public class FooterStatusDisplayItem extends StatusDisplayItem{
 				UiUtils.pickInteractAs(v.getContext(),
 						item.accountID, item.status,
 						s -> s.reblogged,
-						(ic, status, consumer) -> ic.setReblogged(status, true, null, consumer), R.string.sk_reblog_as,
+						(ic, status, consumer) ->
+						{
+							Instance instance=AccountSessionManager.get(item.accountID).getInstanceInfo();
+							if(instance.supportsQuotePostAuthoring()){
+								ListItemsSheet sheet=new ListItemsSheet(itemView.getContext());
+								sheet.add(new ListItem<>(status.reblogged ? R.string.undo_reblog : R.string.button_reblog, 0, R.drawable.ic_repeat_24px, o->{
+									ic.setReblogged(status, true, null, consumer);
+								}));
+								if(status.quoteApproval==null || status.quoteApproval.currentUser==QuoteApproval.CurrentUserPolicy.UNKNOWN || status.quoteApproval.currentUser==QuoteApproval.CurrentUserPolicy.DENIED){
+									sheet.add(new ListItem<>(R.string.create_quote,
+											item.status.quoteApproval!=null && item.status.quoteApproval.automatic.contains(QuoteApproval.Policy.FOLLOWERS) ? R.string.cannot_quote_post_followers_only : R.string.cannot_quote_post,
+											R.drawable.ic_format_quote_off_fill1_24px, null));
+								}else{
+									sheet.add(new ListItem<>(item.status.quoteApproval.currentUser==QuoteApproval.CurrentUserPolicy.MANUAL ? R.string.create_quote_manual_approval : R.string.create_quote,
+											item.status.quoteApproval.currentUser==QuoteApproval.CurrentUserPolicy.MANUAL ? R.string.create_quote_manual_approval_subtitle : 0,
+											R.drawable.ic_format_quote_fill1_24px, o->{
+										sheet.dismiss();
+										Bundle args=new Bundle();
+										args.putString("account", ic.getAccountID());
+										args.putParcelable("quote", Parcels.wrap(status));
+										Nav.go((Activity) item.context, ComposeFragment.class, args);
+									}));
+								}
+								sheet.show();
+							}else{
+								doBoost();
+							}
+						}, R.string.sk_reblog_as,
 						R.string.sk_reblogged_as,
 						R.string.sk_already_reblogged,
 						// TODO: replace once available: https://raw.githubusercontent.com/microsoft/fluentui-system-icons/main/android/library/src/main/res/drawable/ic_fluent_arrow_repeat_all_28_regular.xml

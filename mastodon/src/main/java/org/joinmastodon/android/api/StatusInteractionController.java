@@ -152,6 +152,11 @@ public class StatusInteractionController{
 		E.post(new EmojiReactionsUpdatedEvent(status.id, reactions, false, null));
 	}
 
+	// MOSHIDON:
+	public String getAccountID() {
+		return accountID;
+	}
+
 	// MOSHIDON: we use more parameters
 	public void setReblogged(Status status, boolean reblogged, StatusPrivacy visibility, Consumer<Status> cb){
 		if(!Looper.getMainLooper().isCurrentThread())
