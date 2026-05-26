@@ -385,7 +385,10 @@ public class HeaderStatusDisplayItem extends StatusDisplayItem{
 			MenuItem muteConversation=menu.findItem(R.id.mute_conversation);
 			MenuItem removeQuote=menu.findItem(R.id.remove_quote);
 			if(item.status!=null){
-				bookmark.setVisible(true);
+
+				// MOSHIDON
+				bookmark.setVisible(/* true */ false);
+
 				bookmark.setTitle(item.status.bookmarked ? R.string.remove_bookmark : R.string.add_bookmark);
 				pin.setVisible(item.status.pinned!=null);
 				if(item.status.pinned!=null){
