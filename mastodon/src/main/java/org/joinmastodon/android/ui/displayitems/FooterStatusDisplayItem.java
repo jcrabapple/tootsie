@@ -61,9 +61,9 @@ public class FooterStatusDisplayItem extends StatusDisplayItem{
 		private final TextView reply, boost, favorite;
 		private final ImageView share;
 		private final ColorStateList buttonColors;
-		private final View replyBtn, boostBtn, favoriteBtn, shareBtn;
+		private final View replyBtn, boostBtn, favoriteBtn, shareBtn /* MOSHIDON */, bookmarkBtn;
 		private final PopupMenu boostLongTapMenu, favoriteLongTapMenu;
-		private final View spacer1, spacer2;
+		private final View spacer1, spacer2 /* MOSHIDON */ ,spacer3;
 
 		private final View.AccessibilityDelegate buttonAccessibilityDelegate=new View.AccessibilityDelegate(){
 			@Override
@@ -82,6 +82,10 @@ public class FooterStatusDisplayItem extends StatusDisplayItem{
 			share=findViewById(R.id.share);
 			spacer1=findViewById(R.id.spacer1);
 			spacer2=findViewById(R.id.spacer2);
+
+			// MOSHIDON:
+			bookmarkBtn=findViewById(R.id.bookmark_btn);
+			spacer3=findViewById(R.id.spacer3);
 
 			float[] hsb={0, 0, 0};
 			Color.colorToHSV(UiUtils.getThemeColor(activity, R.attr.colorM3Primary), hsb);
@@ -125,6 +129,12 @@ public class FooterStatusDisplayItem extends StatusDisplayItem{
 			shareBtn.setOnClickListener(this::onShareClick);
 			shareBtn.setAccessibilityDelegate(buttonAccessibilityDelegate);
 
+			// MOSHIDON:
+			// bookmarkBtn.setOnTouchListener(this::onButtonTouch);
+			bookmarkBtn.setOnClickListener(this::onBookmarkClick);
+			bookmarkBtn.setOnLongClickListener(this::onBookmarkLongClick);
+			bookmarkBtn.setAccessibilityDelegate(buttonAccessibilityDelegate);
+
 			favoriteLongTapMenu=new PopupMenu(activity, favoriteBtn);
 			favoriteLongTapMenu.inflate(R.menu.favorite_longtap);
 			favoriteLongTapMenu.setOnMenuItemClickListener(this::onLongTapMenuItemSelected);
@@ -137,6 +147,10 @@ public class FooterStatusDisplayItem extends StatusDisplayItem{
 		public void onBind(FooterStatusDisplayItem item){
 			spacer1.setVisibility(item.fullWidth ? View.VISIBLE : View.GONE);
 			spacer2.setVisibility(item.fullWidth ? View.VISIBLE : View.GONE);
+
+			// MOSHIDON
+			spacer3.setVisibility(item.fullWidth ? View.VISIBLE : View.GONE);
+
 			itemView.setPaddingRelative(V.dp(item.fullWidth ? 8 : 56), itemView.getPaddingTop(), itemView.getPaddingEnd(), itemView.getPaddingBottom());
 			bindButton(reply, item.status.repliesCount);
 			bindButton(boost, item.status.reblogsCount);
@@ -146,6 +160,10 @@ public class FooterStatusDisplayItem extends StatusDisplayItem{
 			boolean isOwn=item.status.account.id.equals(AccountSessionManager.getInstance().getAccount(item.accountID).self.id);
 			boostBtn.setEnabled(item.status.visibility==StatusPrivacy.PUBLIC || item.status.visibility==StatusPrivacy.UNLISTED
 					|| (item.status.visibility==StatusPrivacy.PRIVATE && isOwn));
+
+			// MOSHIDON:
+			bookmarkBtn.setSelected(item.status.bookmarked);
+
 			Drawable d=itemView.getResources().getDrawable(switch(item.status.visibility){
 				case PUBLIC, UNLISTED, LOCAL -> R.drawable.ic_boost;
 				case PRIVATE -> isOwn ? R.drawable.ic_boost_private : R.drawable.ic_boost_disabled_24px;
@@ -254,6 +272,38 @@ public class FooterStatusDisplayItem extends StatusDisplayItem{
 			}, null);
 			return true;
 		}
+
+		private void onBookmarkClick(View v){
+			if(item.status.preview) return;
+			applyInteraction(v,
+					status -> {
+						if(status == null)
+							return;
+						bookmarkBtn.setSelected(!status.bookmarked);
+						// vibrateForAction(bookmark, !status.bookmarked);
+						AccountSessionManager.getInstance().getAccount(item.accountID).getStatusInteractionController().setBookmarked(status, !status.bookmarked
+						//		, r->{
+						//	UiUtils.opacityIn(v);
+						//}
+						);
+					});
+		}
+
+		private boolean onBookmarkLongClick(View v) {
+			if(item.status.preview) return false;
+			if (AccountSessionManager.getInstance().getLoggedInAccounts().size() < 2) return false;
+			UiUtils.pickInteractAs(v.getContext(),
+					item.accountID, item.status,
+					s -> s.bookmarked,
+					(ic, status, consumer) -> ic.setBookmarked(status, true /*, consumer */),
+					R.string.sk_bookmark_as,
+					R.string.sk_bookmarked_as,
+					R.string.sk_already_bookmarked,
+					R.drawable.ic_fluent_bookmark_28_regular
+			);
+			return true;
+		}
+
 
 		// MOSHIDON:
 		private void openComposeView(Status status, String accountID) {

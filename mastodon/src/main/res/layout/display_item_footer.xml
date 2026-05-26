@@ -90,6 +90,35 @@
 	</FrameLayout>
 
 	<Space
+		android:id="@+id/spacer3"
+		android:layout_width="0px"
+		android:layout_height="1px"
+		android:layout_weight="1"/>
+
+	<FrameLayout
+		android:id="@+id/bookmark_btn"
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:layout_marginHorizontal="4dp"
+		android:paddingHorizontal="8dp"
+		android:background="@drawable/bg_status_action"
+		android:minWidth="64dp">
+		<TextView
+			android:id="@+id/bookmark"
+			android:layout_width="wrap_content"
+			android:layout_height="24dp"
+			android:layout_gravity="center|start"
+			android:drawableStart="@drawable/ic_fluent_bookmark_24_selector"
+			android:drawablePadding="6dp"
+			android:drawableTint="?colorM3Outline"
+			android:textColor="?colorM3Outline"
+			android:gravity="center_vertical"
+			android:textAppearance="@style/m3_label_medium"
+			android:duplicateParentState="true"
+			tools:text="123"/>
+	</FrameLayout>
+
+	<Space
 		android:layout_width="0px"
 		android:layout_height="1px"
 		android:layout_weight="1"/>
