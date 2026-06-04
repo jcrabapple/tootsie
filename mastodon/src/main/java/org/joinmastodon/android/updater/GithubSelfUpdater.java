@@ -21,7 +21,7 @@ public abstract class GithubSelfUpdater{
 	}
 
 	public static boolean needSelfUpdating(){
-		return BuildConfig.BUILD_TYPE.equals("githubRelease") || BuildConfig.BUILD_TYPE.equals("githubDebug");
+		return BuildConfig.BUILD_TYPE.equals("githubRelease") || BuildConfig.BUILD_TYPE.equals("githubDebug") /* MOSHIDON */ || BuildConfig.BUILD_TYPE.equals("nightly");
 	}
 
 	public abstract void maybeCheckForUpdates();

@@ -796,8 +796,9 @@ public class HomeTimelineFragment extends StatusListFragment implements ToolbarD
 	}
 
 	private void updateUpdateState(GithubSelfUpdater.UpdateState state){
-		if(state!=GithubSelfUpdater.UpdateState.NO_UPDATE && state!=GithubSelfUpdater.UpdateState.CHECKING)
-			getToolbar().getMenu().findItem(R.id.settings).setIcon(R.drawable.ic_settings_updateready_24px);
+		// MOSHIDON: for now this is broken :D
+//		if(state!=GithubSelfUpdater.UpdateState.NO_UPDATE && state!=GithubSelfUpdater.UpdateState.CHECKING)
+//			getToolbar().getMenu().findItem(R.id.settings).setIcon(R.drawable.ic_settings_updateready_24px);
 	}
 
 	@Subscribe
