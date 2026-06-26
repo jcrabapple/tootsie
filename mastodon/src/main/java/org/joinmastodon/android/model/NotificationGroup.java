@@ -23,6 +23,8 @@ public class NotificationGroup extends BaseModel{
 	public String statusId;
 	public RelationshipSeveranceEvent event;
 	public AccountWarning moderationWarning;
+	// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — collection ID for collection notifications
+	public String collectionId;
 
 
 	@Override

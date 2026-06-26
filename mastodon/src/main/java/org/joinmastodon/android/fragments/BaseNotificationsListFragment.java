@@ -15,6 +15,7 @@ import org.joinmastodon.android.model.NotificationType;
 import org.joinmastodon.android.model.Status;
 import org.joinmastodon.android.model.StatusPrivacy;
 import org.joinmastodon.android.model.viewmodel.NotificationViewModel;
+import org.joinmastodon.android.ui.displayitems.CollectionNotificationStatusDisplayItem;
 import org.joinmastodon.android.ui.displayitems.FollowRequestActionsDisplayItem;
 import org.joinmastodon.android.ui.displayitems.InlineStatusStatusDisplayItem;
 import org.joinmastodon.android.ui.displayitems.NotificationHeaderStatusDisplayItem;
@@ -77,6 +78,9 @@ public abstract class BaseNotificationsListFragment extends BaseStatusListFragme
 		}else{
 			if(n.notification.type==NotificationType.SEVERED_RELATIONSHIPS || n.notification.type==NotificationType.MODERATION_WARNING)
 				titleItem=new NotificationWithButtonStatusDisplayItem(n.getID(), this, getActivity(), n, accountID);
+			else if(n.notification.type==NotificationType.ADDED_TO_COLLECTION || n.notification.type==NotificationType.COLLECTION_UPDATE)
+				// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — collection notification row with View + Remove me
+				titleItem=new CollectionNotificationStatusDisplayItem(n.getID(), this, getActivity(), n, accountID);
 			else
 				titleItem=new NotificationHeaderStatusDisplayItem(n.getID(), this, getActivity(), n, accountID);
 		}
