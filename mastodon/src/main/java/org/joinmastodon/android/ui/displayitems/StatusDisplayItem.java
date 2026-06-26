@@ -114,6 +114,8 @@ public abstract class StatusDisplayItem{
 			// MOSHIDON:
 			case DUMMY -> new DummyStatusDisplayItem.Holder(activity);
 			case EMOJI_REACTIONS -> new EmojiReactionsStatusDisplayItem.Holder(activity, parent);
+			// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — collection metadata header
+			case COLLECTION_HEADER -> new CollectionHeaderStatusDisplayItem.Holder(activity, parent);
 		};
 	}
 
@@ -305,7 +307,9 @@ public abstract class StatusDisplayItem{
 		NESTED_QUOTE,
 		// MOSHIDON:
 		DUMMY,
-		EMOJI_REACTIONS
+		EMOJI_REACTIONS,
+		// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — collection metadata header
+		COLLECTION_HEADER
 	}
 
 	public static abstract class Holder<T> extends BindableViewHolder<T> implements UsableRecyclerView.DisableableClickable{

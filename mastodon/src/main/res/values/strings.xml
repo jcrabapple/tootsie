@@ -619,6 +619,19 @@
 	<string name="manage_list_members">Manage list members</string>
 	<string name="list_no_members">No members yet</string>
 	<string name="list_find_users">Find users to add</string>
+
+	<!-- TOOTSIE: FEP-7aa9 / Mastodon 4.6 — Collection strings -->
+	<string name="collections">Collections</string>
+	<string name="collection_detail">Collection detail</string>
+	<string name="collection_no_description">No description provided</string>
+	<string name="collection_empty">This collection has no members. Collections are curated, publicly-shareable sets of up to 25 accounts for discovery and recommendation.</string>
+	<string name="collection_created">Created %s</string>
+	<string name="collection_updated">Updated %s</string>
+	<string name="collection_member_count_label">%1$d members</string>
+	<plurals name="collection_member_count">
+		<item quantity="one">%d member</item>
+		<item quantity="other">%d members</item>
+	</plurals>
 	<string name="reply_to_user">Reply to %s</string>
 	<string name="posted_at">Posted at %s</string>
 	<string name="non_mutual_sheet_title">Hello, new connection!</string>

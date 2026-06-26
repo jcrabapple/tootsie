@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Background for the collection hashtag badge pill.
+     Rounded rectangle with primary container color fill.
+     Uses a hardcoded color because drawable shapes cannot reference theme attrs. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+	android:shape="rectangle">
+	<corners android:radius="12dp"/>
+	<solid android:color="#1A6C63"/>
+	<padding android:left="4dp" android:right="4dp" android:top="2dp" android:bottom="2dp"/>
+</shape>

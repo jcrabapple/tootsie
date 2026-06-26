@@ -25,7 +25,7 @@ import java.util.List;
  */
 @AllFieldsAreRequired
 @Parcel
-public class Collection extends BaseModel {
+public class Collection extends BaseModel implements DisplayItemsParent {
     @RequiredField
     public String id;
     @RequiredField
@@ -57,6 +57,11 @@ public class Collection extends BaseModel {
         if (description == null) description = "";
         if (featured == null) featured = "";
         if (language == null) language = "";
+    }
+
+    @Override
+    public String getID() {
+        return id;
     }
 
     @Override

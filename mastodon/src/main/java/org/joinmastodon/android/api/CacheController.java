@@ -44,6 +44,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.joinmastodon.android.model.Collection;
+
 import me.grishka.appkit.api.Callback;
 import me.grishka.appkit.api.ErrorResponse;
 import me.grishka.appkit.utils.WorkerThread;
@@ -531,6 +533,23 @@ public class CacheController{
 				break;
 			}
 		}
+	}
+
+	// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — Collection cache (in-memory only, no DB table)
+	private Map<String, Collection> collectionsCache = new HashMap<>();
+
+	public void addCollection(Collection collection) {
+		if (collection != null) {
+			collectionsCache.put(collection.id, collection);
+		}
+	}
+
+	public Collection getCollection(String id) {
+		return collectionsCache.get(id);
+	}
+
+	public void invalidateCollection(String id) {
+		collectionsCache.remove(id);
 	}
 
 	private class DatabaseHelper extends SQLiteOpenHelper{
