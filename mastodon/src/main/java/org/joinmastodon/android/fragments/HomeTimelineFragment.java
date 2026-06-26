@@ -969,7 +969,7 @@ public class HomeTimelineFragment extends StatusListFragment implements ToolbarD
 			ssb.append(' ');
 		int start=ssb.length();
 		ssb.append(campaign.bannerButtonText.trim());
-		ssb.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.masterialDark_colorGoldenrodContainer, getActivity().getTheme())), start, ssb.length(), 0);
+		ssb.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.tootsieDark_colorGoldenrodContainer, getActivity().getTheme())), start, ssb.length(), 0);
 		ssb.setSpan(new UnderlineSpan(), start, ssb.length(), 0);
 		ssb.setSpan(new TypefaceSpan("sans-serif-medium"), start, ssb.length(), 0);
 		text.setText(ssb);

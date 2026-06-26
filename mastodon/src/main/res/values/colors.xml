@@ -7,62 +7,65 @@
 	<color name="navigation_bar_bg_light">#282C37</color>
 	<color name="highlight_over_dark">#30FFFFFF</color>
 
+	<!-- TOOTSIE: launcher icon background (teal) -->
+	<color name="ic_launcher_background">#006B5E</color>
+
 <!--	<color name="shortcut_icon_background">#FFF</color>-->
 <!--	<color name="shortcut_icon_foreground">@color/m3_sys_light_primary</color>-->
 
 	<!-- M3 dynamic colors -->
 
 	<!-- light theme -->
-	<color name="m3_sys_light_primary">@color/masterialLight_primary</color>
-	<color name="m3_sys_light_on_primary">@color/masterialLight_onPrimary</color>
-	<color name="m3_sys_light_primary_container">@color/masterialLight_primaryContainer</color>
-	<color name="m3_sys_light_on_primary_container">@color/masterialLight_onPrimaryContainer</color>
-	<color name="m3_sys_light_secondary">@color/masterialLight_secondary</color>
-	<color name="m3_sys_light_on_secondary">@color/masterialLight_onSecondary</color>
-	<color name="m3_sys_light_secondary_container">@color/masterialLight_secondaryContainer</color>
-	<color name="m3_sys_light_on_secondary_container">@color/masterialLight_onSecondaryContainer</color>
-	<color name="m3_sys_light_tertiary">@color/masterialLight_tertiary</color>
-	<color name="m3_sys_light_on_tertiary">@color/masterialLight_onTertiary</color>
-	<color name="m3_sys_light_tertiary_container">@color/masterialLight_tertiaryContainer</color>
-	<color name="m3_sys_light_on_tertiary_container">@color/masterialLight_onTertiaryContainer</color>
-	<color name="m3_sys_light_background">@color/masterialLight_background</color>
-	<color name="m3_sys_light_on_background">@color/masterialLight_onBackground</color>
-	<color name="m3_sys_light_surface">@color/masterialLight_surface</color>
-	<color name="m3_sys_light_on_surface">@color/masterialLight_onSurface</color>
-	<color name="m3_sys_light_surface_variant">@color/masterialLight_surfaceVariant</color>
-	<color name="m3_sys_light_on_surface_variant">@color/masterialLight_onSurfaceVariant</color>
-	<color name="m3_sys_light_outline">@color/masterialLight_outline</color>
-	<color name="m3_sys_light_outline_variant">@color/masterialLight_outlineVariant</color>
-	<color name="m3_sys_light_error">@color/masterialLight_error</color>
-	<color name="m3_sys_light_on_error">@color/masterialLight_onError</color>
-	<color name="m3_sys_light_error_container">@color/masterialLight_errorContainer</color>
-	<color name="m3_sys_light_on_error_container">@color/masterialLight_onErrorContainer</color>
+	<color name="m3_sys_light_primary">@color/tootsieLight_primary</color>
+	<color name="m3_sys_light_on_primary">@color/tootsieLight_onPrimary</color>
+	<color name="m3_sys_light_primary_container">@color/tootsieLight_primaryContainer</color>
+	<color name="m3_sys_light_on_primary_container">@color/tootsieLight_onPrimaryContainer</color>
+	<color name="m3_sys_light_secondary">@color/tootsieLight_secondary</color>
+	<color name="m3_sys_light_on_secondary">@color/tootsieLight_onSecondary</color>
+	<color name="m3_sys_light_secondary_container">@color/tootsieLight_secondaryContainer</color>
+	<color name="m3_sys_light_on_secondary_container">@color/tootsieLight_onSecondaryContainer</color>
+	<color name="m3_sys_light_tertiary">@color/tootsieLight_tertiary</color>
+	<color name="m3_sys_light_on_tertiary">@color/tootsieLight_onTertiary</color>
+	<color name="m3_sys_light_tertiary_container">@color/tootsieLight_tertiaryContainer</color>
+	<color name="m3_sys_light_on_tertiary_container">@color/tootsieLight_onTertiaryContainer</color>
+	<color name="m3_sys_light_background">@color/tootsieLight_background</color>
+	<color name="m3_sys_light_on_background">@color/tootsieLight_onBackground</color>
+	<color name="m3_sys_light_surface">@color/tootsieLight_surface</color>
+	<color name="m3_sys_light_on_surface">@color/tootsieLight_onSurface</color>
+	<color name="m3_sys_light_surface_variant">@color/tootsieLight_surfaceVariant</color>
+	<color name="m3_sys_light_on_surface_variant">@color/tootsieLight_onSurfaceVariant</color>
+	<color name="m3_sys_light_outline">@color/tootsieLight_outline</color>
+	<color name="m3_sys_light_outline_variant">@color/tootsieLight_outlineVariant</color>
+	<color name="m3_sys_light_error">@color/tootsieLight_error</color>
+	<color name="m3_sys_light_on_error">@color/tootsieLight_onError</color>
+	<color name="m3_sys_light_error_container">@color/tootsieLight_errorContainer</color>
+	<color name="m3_sys_light_on_error_container">@color/tootsieLight_onErrorContainer</color>
 
 	<!-- dark theme -->
-	<color name="m3_sys_dark_primary">@color/masterialDark_primary</color>
-	<color name="m3_sys_dark_on_primary">@color/masterialDark_onPrimary</color>
-	<color name="m3_sys_dark_primary_container">@color/masterialDark_primaryContainer</color>
-	<color name="m3_sys_dark_on_primary_container">@color/masterialDark_onPrimaryContainer</color>
-	<color name="m3_sys_dark_secondary">@color/masterialDark_secondary</color>
-	<color name="m3_sys_dark_on_secondary">@color/masterialDark_onSecondary</color>
-	<color name="m3_sys_dark_secondary_container">@color/masterialDark_secondaryContainer</color>
-	<color name="m3_sys_dark_on_secondary_container">@color/masterialDark_onSecondaryContainer</color>
-	<color name="m3_sys_dark_tertiary">@color/masterialDark_tertiary</color>
-	<color name="m3_sys_dark_on_tertiary">@color/masterialDark_onTertiary</color>
-	<color name="m3_sys_dark_tertiary_container">@color/masterialDark_tertiaryContainer</color>
-	<color name="m3_sys_dark_on_tertiary_container">@color/masterialDark_onTertiaryContainer</color>
-	<color name="m3_sys_dark_background">@color/masterialDark_background</color>
-	<color name="m3_sys_dark_on_background">@color/masterialDark_onBackground</color>
-	<color name="m3_sys_dark_surface">@color/masterialDark_surface</color>
-	<color name="m3_sys_dark_on_surface">@color/masterialDark_onSurface</color>
-	<color name="m3_sys_dark_surface_variant">@color/masterialDark_surfaceVariant</color>
-	<color name="m3_sys_dark_on_surface_variant">@color/masterialDark_onSurfaceVariant</color>
-	<color name="m3_sys_dark_outline">@color/masterialDark_outline</color>
-	<color name="m3_sys_dark_outline_variant">@color/masterialDark_outlineVariant</color>
-	<color name="m3_sys_dark_error">@color/masterialDark_error</color>
-	<color name="m3_sys_dark_on_error">@color/masterialDark_onError</color>
-	<color name="m3_sys_dark_error_container">@color/masterialDark_errorContainer</color>
-	<color name="m3_sys_dark_on_error_container">@color/masterialDark_onErrorContainer</color>
+	<color name="m3_sys_dark_primary">@color/tootsieDark_primary</color>
+	<color name="m3_sys_dark_on_primary">@color/tootsieDark_onPrimary</color>
+	<color name="m3_sys_dark_primary_container">@color/tootsieDark_primaryContainer</color>
+	<color name="m3_sys_dark_on_primary_container">@color/tootsieDark_onPrimaryContainer</color>
+	<color name="m3_sys_dark_secondary">@color/tootsieDark_secondary</color>
+	<color name="m3_sys_dark_on_secondary">@color/tootsieDark_onSecondary</color>
+	<color name="m3_sys_dark_secondary_container">@color/tootsieDark_secondaryContainer</color>
+	<color name="m3_sys_dark_on_secondary_container">@color/tootsieDark_onSecondaryContainer</color>
+	<color name="m3_sys_dark_tertiary">@color/tootsieDark_tertiary</color>
+	<color name="m3_sys_dark_on_tertiary">@color/tootsieDark_onTertiary</color>
+	<color name="m3_sys_dark_tertiary_container">@color/tootsieDark_tertiaryContainer</color>
+	<color name="m3_sys_dark_on_tertiary_container">@color/tootsieDark_onTertiaryContainer</color>
+	<color name="m3_sys_dark_background">@color/tootsieDark_background</color>
+	<color name="m3_sys_dark_on_background">@color/tootsieDark_onBackground</color>
+	<color name="m3_sys_dark_surface">@color/tootsieDark_surface</color>
+	<color name="m3_sys_dark_on_surface">@color/tootsieDark_onSurface</color>
+	<color name="m3_sys_dark_surface_variant">@color/tootsieDark_surfaceVariant</color>
+	<color name="m3_sys_dark_on_surface_variant">@color/tootsieDark_onSurfaceVariant</color>
+	<color name="m3_sys_dark_outline">@color/tootsieDark_outline</color>
+	<color name="m3_sys_dark_outline_variant">@color/tootsieDark_outlineVariant</color>
+	<color name="m3_sys_dark_error">@color/tootsieDark_error</color>
+	<color name="m3_sys_dark_on_error">@color/tootsieDark_onError</color>
+	<color name="m3_sys_dark_error_container">@color/tootsieDark_errorContainer</color>
+	<color name="m3_sys_dark_on_error_container">@color/tootsieDark_onErrorContainer</color>
 
 	<!-- extended colors -->
 	<color name="ext_favorite_light">#E89A00</color>

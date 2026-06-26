@@ -16,7 +16,7 @@
 		android:layout_height="wrap_content"
 		android:layout_weight="1"
 		android:textAppearance="@style/m3_body_medium"
-		android:textColor="@color/masterialDark_onSecondaryContainer"
+		android:textColor="@color/tootsieDark_onSecondaryContainer"
 		tools:text="Donation banner text goes here"/>
 	
 	<ImageButton
@@ -24,8 +24,8 @@
 		android:layout_width="40dp"
 		android:layout_height="40dp"
 		android:background="?android:actionBarItemBackground"
-		android:tint="@color/masterialDark_onSecondaryContainer"
-		android:backgroundTint="@color/masterialDark_onSecondaryContainer"
+		android:tint="@color/tootsieDark_onSecondaryContainer"
+		android:backgroundTint="@color/tootsieDark_onSecondaryContainer"
 		android:src="@drawable/ic_baseline_close_24"
 		android:contentDescription="@string/dismiss"/>
 

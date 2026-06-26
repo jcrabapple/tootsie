@@ -46,7 +46,7 @@ import me.grishka.appkit.api.ErrorResponse;
 
  * <p>Notification events ({@link CollectionUpdatedEvent}) invalidate the cache
  * entry and trigger a refresh. No Room — persistence is via {@code @Parcel}
- * + Moshidon's in-memory cache layer.
+ * + Tootsie's in-memory cache layer.
  */
 public class CollectionDetailFragment extends BaseStatusListFragment<Collection> {
 	private String collectionID;

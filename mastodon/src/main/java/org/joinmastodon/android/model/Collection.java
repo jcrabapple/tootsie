@@ -20,7 +20,7 @@ import java.util.List;
  * experiences" to appear; members are notified when added and can
  * self-revoke at any time.
  *
- * Moshidon's existing {@link FollowList} is a different concept (private
+ * Tootsie's existing {@link FollowList} is a different concept (private
  * follow filtering). Collections live alongside, not as a replacement.
  */
 @Parcel

@@ -127,7 +127,7 @@ public class AccountSwitcherSheet extends BottomSheet{
 				Nav.go(activity, CustomWelcomeFragment.class, null);
 				dismiss();
 			}));
-			// disabled in moshidon
+			// disabled in tootsie
 //			adapter.addAdapter(new ClickableSingleViewRecyclerAdapter(makeSimpleListItem(R.string.log_out_all_accounts, R.drawable.ic_fluent_person_arrow_right_24_filled), this::confirmLogOutAll));
 		}
 		// /MOSHIDON
