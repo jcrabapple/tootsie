@@ -647,6 +647,7 @@
 	<string name="collection_no_members">No members yet</string>
 	<string name="collection_find_users">Find users to add</string>
 	<string name="collection_max_members">Collections can have at most 25 members</string>
+	<string name="collection_discoverable">Discoverable</string>
 	<string name="collection_not_discoverable">This account has opted out of discovery</string>
 	<string name="collection_can_feature_public">Anyone can add this account to collections</string>
 	<string name="collection_can_feature_followers">Only followers can add this account</string>

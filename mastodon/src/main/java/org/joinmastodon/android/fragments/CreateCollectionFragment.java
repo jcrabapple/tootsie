@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -29,6 +31,7 @@ import me.grishka.appkit.api.Callback;
 import me.grishka.appkit.api.ErrorResponse;
 import me.grishka.appkit.utils.MergeRecyclerAdapter;
 import me.grishka.appkit.utils.SingleViewRecyclerAdapter;
+import me.grishka.appkit.utils.V;
 
 import java.util.Collections;
 import java.util.List;
@@ -65,6 +68,7 @@ public class CreateCollectionFragment extends BaseSettingsFragment<Void>{
 	private EditText languageEdit;
 	private FloatingHintEditTextLayout tagEditLayout;
 	private EditText tagEdit;
+	private CheckBox discoverableCheck;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState){
@@ -146,6 +150,17 @@ public class CreateCollectionFragment extends BaseSettingsFragment<Void>{
 			tagEdit.setText(existingCollection.tag.name);
 		topView.addView(tagEditLayout);
 
+		// Discoverable checkbox — defaults to true for new collections,
+		// reflects existing state in edit mode
+		discoverableCheck=new CheckBox(getActivity());
+		discoverableCheck.setText(R.string.collection_discoverable);
+		discoverableCheck.setChecked(existingCollection==null || existingCollection.discoverable);
+		LinearLayout.LayoutParams cbParams=new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		cbParams.setMargins(0, V.dp(16), 0, 0);
+		discoverableCheck.setLayoutParams(cbParams);
+		topView.addView(discoverableCheck);
+
 		MergeRecyclerAdapter adapter=new MergeRecyclerAdapter();
 		adapter.addAdapter(new SingleViewRecyclerAdapter(topView));
 		// No settings list items — just the form above
@@ -171,8 +186,9 @@ public class CreateCollectionFragment extends BaseSettingsFragment<Void>{
 			tag=tag.substring(1);
 
 		if(existingCollection==null){
-			// Create
-			new CreateCollection(title, description, language, tag)
+			// Create — sensitive defaults to false, discoverable from checkbox
+			boolean discoverable=discoverableCheck.isChecked();
+			new CreateCollection(title, description, language, tag, false, discoverable)
 					.setCallback(new Callback<>(){
 						@Override
 						public void onSuccess(CreateCollection.Response result){
@@ -193,8 +209,10 @@ public class CreateCollectionFragment extends BaseSettingsFragment<Void>{
 			String oldDesc=existingCollection.description!=null ? existingCollection.description : "";
 			String oldLang=existingCollection.language!=null ? existingCollection.language : "";
 			String oldTag=existingCollection.tag!=null ? existingCollection.tag.name : "";
-			if(!title.equals(existingCollection.name) || !description.equals(oldDesc) || !language.equals(oldLang) || !tag.equals(oldTag)){
-				new UpdateCollection(existingCollection.id, title, description, language, tag)
+			boolean oldDiscoverable=existingCollection.discoverable;
+			if(!title.equals(existingCollection.name) || !description.equals(oldDesc) || !language.equals(oldLang) || !tag.equals(oldTag) || discoverableCheck.isChecked()!=oldDiscoverable){
+				boolean newDiscoverable=discoverableCheck.isChecked();
+				new UpdateCollection(existingCollection.id, title, description, language, tag, null, newDiscoverable)
 						.setCallback(new Callback<>(){
 							@Override
 							public void onSuccess(UpdateCollection.Response result){

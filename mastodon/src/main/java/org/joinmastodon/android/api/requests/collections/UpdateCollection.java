@@ -12,9 +12,9 @@ import org.joinmastodon.android.model.Collection;
  * Response is wrapped: {"collection": {...}}
  */
 public class UpdateCollection extends MastodonAPIRequest<UpdateCollection.Response> {
-    public UpdateCollection(String id, String name, String description, String language, String tagName) {
+    public UpdateCollection(String id, String name, String description, String language, String tagName, Boolean sensitive, Boolean discoverable) {
         super(HttpMethod.PATCH, "/collections/" + id, new TypeToken<>() {});
-        setRequestBody(new Request(name, description, language, tagName));
+        setRequestBody(new Request(name, description, language, tagName, sensitive, discoverable));
     }
 
     public static class Response {
@@ -26,12 +26,16 @@ public class UpdateCollection extends MastodonAPIRequest<UpdateCollection.Respon
         public String description;
         public String language;
         public String tagName;
+        public Boolean sensitive;
+        public Boolean discoverable;
 
-        public Request(String name, String description, String language, String tagName) {
+        public Request(String name, String description, String language, String tagName, Boolean sensitive, Boolean discoverable) {
             this.name = name;
             this.description = description;
             this.language = language;
             this.tagName = tagName;
+            this.sensitive = sensitive;
+            this.discoverable = discoverable;
         }
     }
 }

@@ -34,6 +34,8 @@ public class Collection extends BaseModel implements DisplayItemsParent {
     public List<Account> accounts; // populated on show endpoint only
     public String url; // public shareable URL
     public String language; // ISO 639-1 (e.g. "en")
+    public boolean sensitive; // Mastodon 4.6: CW / sensitive flag
+    public boolean discoverable; // Mastodon 4.6: appears in discovery
     public Hashtag tag; // optional single topic hashtag
     @RequiredField
     public Instant createdAt;
