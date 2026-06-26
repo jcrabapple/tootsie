@@ -69,6 +69,12 @@ public class CollectionDetailFragment extends BaseStatusListFragment<Collection>
 			// Preloaded with no accounts — use the ID from the preloaded collection
 			collectionID = preloaded.id;
 		}
+		// If we have a collectionID and haven't already loaded data, kick off the API call.
+		// Without this, navigating here from ManageCollections (where the preloaded
+		// Collection from the index endpoint lacks accounts) shows an endless spinner.
+		if (collectionID != null && data.isEmpty()) {
+			loadData();
+		}
 		E.register(this);
 	}
 
