@@ -51,6 +51,8 @@ Expected:
 3. **`rebrand: app label and version string`** — fixes app label that bulk sed missed (German locale override + `mo_app_name` family); also adds initial `Collection.java` model
 4. **`feat(collections): API layer for Mastodon 4.6 Collections`** — 10 request classes + Collection model + InteractionPolicy model + NotificationType extensions + Notification.collection field
 5. **`feat(collections): model interaction policy & notification payload`** — final model extensions
+6. **`docs: add HANDOFF.md for next-session pickup`** — session state capture
+7. **`feat(collections): CollectionDetailFragment`** — read-only viewer for a single collection (Priority 1 UI)
 
 ## What's Done (Foundation Layer)
 
@@ -69,7 +71,7 @@ All committed, all pushed, all building green:
 
 ### Priority 1: Minimum viable feature
 
-- [ ] **`CollectionDetailFragment`** — read-only viewer for a single collection. Renders the collection (title, description, hashtag, member count) and a list of member accounts. The "View" button on a Featured-tab collection opens this. **START HERE.**
+- [x] **`CollectionDetailFragment`** — read-only viewer for a single collection. Renders the collection (title, description, hashtag, member count) and a list of member accounts. The "View" button on a Featured-tab collection opens this. Done in commit `937ff3757`.
 
 ### Priority 2: Discovery (Featured tab integration)
 
