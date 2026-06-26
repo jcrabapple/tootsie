@@ -111,8 +111,8 @@ public class AccountSessionManager{
 	public static String getRedirectURI(){
 		StringBuilder builder=new StringBuilder();
 		builder.append("tootsie-android-");
-		if(BuildConfig.BUILD_TYPE.equals("debug") || BuildConfig.BUILD_TYPE.equals("nightly")){
-			builder.append(BuildConfig.BUILD_TYPE);
+		if(BuildConfig.BUILD_TYPE.contains("debug") || BuildConfig.BUILD_TYPE.equals("nightly")){
+			builder.append(BuildConfig.BUILD_TYPE.contains("debug") ? "debug" : BuildConfig.BUILD_TYPE);
 			builder.append('-');
 		}
 		builder.append("auth://callback");
