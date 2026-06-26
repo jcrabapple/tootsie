@@ -28,7 +28,13 @@ public enum NotificationType{
 	@SerializedName("quote")
 	QUOTE,
 	@SerializedName("quoted_update")
-	QUOTED_UPDATE;
+	QUOTED_UPDATE,
+
+	// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — Collections notifications
+	@SerializedName("added_to_collection")
+	ADDED_TO_COLLECTION,
+	@SerializedName("collection_update")
+	COLLECTION_UPDATE;
 
 	public boolean canBeGrouped(){
 		return this==REBLOG || this==FAVORITE || this==FOLLOW;

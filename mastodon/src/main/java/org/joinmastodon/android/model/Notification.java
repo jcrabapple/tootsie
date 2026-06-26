@@ -21,10 +21,15 @@ public class Notification extends BaseModel implements DisplayItemsParent{
 	public RelationshipSeveranceEvent event;
 	public AccountWarning moderationWarning;
 
+	// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — Collections notifications carry the collection itself
+	public Collection collection;
+
 	@Override
 	public void postprocess() throws ObjectValidationException{
 		super.postprocess();
-		account.postprocess();
+		// TOOTSIE: hardened against null account for FEP-7aa9 collection notifications
+		if(account!=null)
+			account.postprocess();
 		if(status!=null)
 			status.postprocess();
 		if(event!=null){
@@ -37,7 +42,12 @@ public class Notification extends BaseModel implements DisplayItemsParent{
 		}
 		if(moderationWarning!=null)
 			moderationWarning.postprocess();
-		if(type!=NotificationType.SEVERED_RELATIONSHIPS && type!=NotificationType.MODERATION_WARNING && account==null){
+		// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — collection notifications carry the collection
+		if(collection!=null)
+			collection.postprocess();
+		if(type!=NotificationType.SEVERED_RELATIONSHIPS && type!=NotificationType.MODERATION_WARNING &&
+		   type!=NotificationType.ADDED_TO_COLLECTION && type!=NotificationType.COLLECTION_UPDATE &&
+		   account==null){
 			throw new ObjectValidationException("account must be present for type "+type);
 		}
 	}

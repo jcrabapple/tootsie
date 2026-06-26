@@ -84,6 +84,9 @@ public class Account extends BaseModel implements Searchable{
 	 */
 	public boolean discoverable;
 
+	// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — how this account may be added to Collections
+	public InteractionPolicy interactionPolicy;
+
 	// Statistical attributes
 
 	/**
@@ -173,6 +176,10 @@ public class Account extends BaseModel implements Searchable{
 		if(moved!=null)
 			moved.postprocess();
 
+		// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — InteractionPolicy defaults to MANUAL when null
+		if(interactionPolicy!=null)
+			interactionPolicy.postprocess();
+
 		// MOSHIDON: fqn block
 		if(fqn==null) fqn=getFullyQualifiedName();
 		if(id==null) id="";
@@ -252,6 +259,7 @@ public class Account extends BaseModel implements Searchable{
 				", suspended="+suspended+
 				", muteExpiresAt="+muteExpiresAt+
 				", noindex="+noindex+
+				", interactionPolicy="+interactionPolicy+
 				'}';
 	}
 }
