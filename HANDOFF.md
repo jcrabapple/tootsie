@@ -92,7 +92,10 @@ All committed, all pushed, all building green:
 ### Priority 5: Polish
 
 - [x] **Test against a 4.6 instance (dmv.community)** — Done June 26, 2026. All flows verified on-device against dmv.community: create, edit, delete, view members, notifications. Three bugs found and fixed (see Session Notes below).
-- [ ] Replace the placeholder `drawable/ic_launcher_foreground.xml` (currently uses Moshidon's Mo path) with a proper Tootsie icon
+- [x] **Replace placeholder launcher icon** — Done June 26. New adaptive icon: white stylized "T" on teal (#006B5E) background. `drawable/ic_launcher_foreground.xml` + `mipmap-anydpi-v26/ic_launcher.xml`.
+- [x] **Dusk Coast color palette** — Done June 26. All 330 M3 color tokens replaced: deep teal primary, warm amber secondary, soft coral tertiary. Color prefix renamed: `masterial*` → `tootsie*`. Splash screen updated.
+- [x] **Complete Moshidon branding removal** — Done June 26. Java comments, German locale strings, donation banner XML all updated. `// MOSHIDON:` provenance markers preserved.
+- [x] **UI visual differentiation** — Done June 26. Tab bar: flat with divider line (no shadow), teal PrimaryContainer indicator pill. Profile: gradient overlay on cover image for depth.
 - [ ] Translate `mo_*` strings to Tootsie for the untranslated English fallback in `values/strings_mo.xml`
 - [ ] First 0.1.0 release tag
 
