@@ -167,9 +167,9 @@ public class CreateCollectionFragment extends BaseSettingsFragment<Void>{
 			new CreateCollection(title, description, language, tag)
 					.setCallback(new Callback<>(){
 						@Override
-						public void onSuccess(Collection result){
-							AccountSessionManager.get(accountID).getCacheController().addCollection(result);
-							E.post(new CollectionCreatedEvent(accountID, result));
+						public void onSuccess(CreateCollection.Response result){
+							AccountSessionManager.get(accountID).getCacheController().addCollection(result.collection);
+							E.post(new CollectionCreatedEvent(accountID, result.collection));
 							Nav.finish(CreateCollectionFragment.this);
 						}
 
@@ -189,9 +189,9 @@ public class CreateCollectionFragment extends BaseSettingsFragment<Void>{
 				new UpdateCollection(existingCollection.id, title, description, language, tag)
 						.setCallback(new Callback<>(){
 							@Override
-							public void onSuccess(Collection result){
-								AccountSessionManager.get(accountID).getCacheController().addCollection(result);
-								E.post(new CollectionUpdatedEvent(accountID, result.id, result));
+							public void onSuccess(UpdateCollection.Response result){
+								AccountSessionManager.get(accountID).getCacheController().addCollection(result.collection);
+								E.post(new CollectionUpdatedEvent(accountID, result.collection.id, result.collection));
 								Nav.finish(CreateCollectionFragment.this);
 							}
 

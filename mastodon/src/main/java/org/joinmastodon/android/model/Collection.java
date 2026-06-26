@@ -23,7 +23,6 @@ import java.util.List;
  * Moshidon's existing {@link FollowList} is a different concept (private
  * follow filtering). Collections live alongside, not as a replacement.
  */
-@AllFieldsAreRequired
 @Parcel
 public class Collection extends BaseModel implements DisplayItemsParent {
     @RequiredField
