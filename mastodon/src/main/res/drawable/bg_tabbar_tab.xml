@@ -4,7 +4,7 @@
 		<animated-selector>
 			<item android:id="@+id/selected" android:state_selected="true">
 				<shape>
-					<solid android:color="?colorM3SecondaryContainer"/>
+					<solid android:color="?colorM3PrimaryContainer"/>
 					<size android:width="64dp" android:height="32dp"/>
 					<corners android:radius="16dp"/>
 				</shape>

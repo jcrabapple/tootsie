@@ -36,6 +36,13 @@
 						android:contentDescription="@string/profile_header"
 						android:scaleType="centerCrop" />
 
+					<!-- // TOOTSIE: gradient overlay for depth on cover image -->
+					<View
+						android:layout_width="match_parent"
+						android:layout_height="144dp"
+						android:background="@drawable/bg_profile_cover_gradient"
+						android:importantForAccessibility="no" />
+
 					<TextView
 						android:id="@+id/follows_you"
 						android:layout_width="wrap_content"

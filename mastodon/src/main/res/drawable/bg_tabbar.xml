@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- // TOOTSIE: custom tab bar background with top divider + warm tint -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- Base surface -->
 	<item>
 		<color android:color="?colorM3Surface"/>
 	</item>
-	<item>
-		<shape android:tint="?colorM3Primary">
-			<solid android:color="#14000000"/>
+	<!-- Top divider line (1dp, outline variant) -->
+	<item android:gravity="top" android:height="1dp">
+		<shape>
+			<solid android:color="?colorM3OutlineVariant"/>
 		</shape>
 	</item>
 </layer-list>

@@ -5,7 +5,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:background="@drawable/bg_tabbar"
-	android:elevation="3dp"
+	android:elevation="0dp"
 	android:outlineProvider="bounds"
 	android:clipChildren="false">
 
