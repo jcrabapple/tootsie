@@ -96,8 +96,68 @@ All committed, all pushed, all building green:
 - [x] **Dusk Coast color palette** — Done June 26. All 330 M3 color tokens replaced: deep teal primary, warm amber secondary, soft coral tertiary. Color prefix renamed: `masterial*` → `tootsie*`. Splash screen updated.
 - [x] **Complete Moshidon branding removal** — Done June 26. Java comments, German locale strings, donation banner XML all updated. `// MOSHIDON:` provenance markers preserved.
 - [x] **UI visual differentiation** — Done June 26. Tab bar: flat with divider line (no shadow), teal PrimaryContainer indicator pill. Profile: gradient overlay on cover image for depth.
+- [x] **Sunset Coral visual redesign** — Done June 26 (commit `3fcd15fb9`). Complete palette overhaul:
+  - Primary: warm coral (#C00013 light / #FFB4A0 dark)
+  - Secondary: warm amber/gold (#7D5800 light / #F0BD48 dark) — changed from teal because user said teal "looks blue"
+  - Neutral grays: warm-tinted (#1A1C1A dark surface) replacing Moshidon purple-tinted grays
+  - All `purple_primary_*`, `primary_*`, `gray_*` in `colors_custom.xml` overwritten to coral/warm values
+  - `colors_masterial.xml` fully rewritten with coral/amber M3 tonal palette (all 3 contrast levels)
+  - Deleted `values-v31/colors.xml` and `values-v34/colors.xml` — these redirected `m3_sys_*` to `@android:color/system_*` (Android dynamic color from wallpaper), overriding our palette on API 31+/34 devices. This was the root cause of the theme not applying on the Samsung S24 Ultra.
+  - `UiUtils.setUserPreferredTheme()` hardcodes `MATERIAL3` palette instead of reading saved Moshidon color preference
+  - Shape language: all buttons 100dp pill → 12dp rounded rectangle; dialogs 28dp → 16dp; popups/text fields 4dp → 12dp; bottom sheet 28dp → 16dp; compose FAB 4dp → 16dp
+  - Extended colors: boost → teal, launcher icon → coral, splash → coral
+- [x] **Collections icon in profile top bar** — Done June 26 (commit `3fcd15fb9`). `profile_own.xml`: Manage Collections menu item now has `android:icon="@drawable/ic_fluent_collections_24_regular"` and `android:showAsAction="always"` — visible as action icon instead of hidden in overflow.
+- [x] **v0.1.0-alpha.2 release** — Done June 26. APK uploaded to GitHub release. https://github.com/jcrabapple/tootsie/releases/tag/v0.1.0-alpha.2
 - [ ] Translate `mo_*` strings to Tootsie for the untranslated English fallback in `values/strings_mo.xml`
-- [ ] First 0.1.0 release tag
+- [ ] First stable 0.1.0 release
+
+## Session: June 26, 2026 — Sunset Coral Visual Redesign
+
+### Problem
+
+Previous session changed color values (teal palette) but app still looked identical to Moshidon. User reported "still blue/periwinkle/purple" after multiple iterations.
+
+### Root Causes Found (3 layers)
+
+1. **`purple_primary_*` still periwinkle** — `ColorPalette.Purple` in `palettes.xml` reads `@color/purple_primary_*` directly, bypassing our `primary_*` aliases. Fix: overwrote all `purple_primary_*` hex values to coral in `colors_custom.xml`.
+
+2. **`gray_*` still purple-tinted** — `ColorPalette.Dark` sets `colorM3Background`/`colorM3Surface` → `?colorGray900` = old `#18131c` (purple-tinted dark). Fix: overwrote all `gray_*` to warm-tinted neutrals (#1A1C1A etc.) in `colors_custom.xml`.
+
+3. **`values-v34/colors.xml` — THE ROOT CAUSE** — On Android 14 (API 34, Samsung S24 Ultra), this file overrode ALL `m3_sys_*` colors to `@android:color/system_*` (Android's dynamic color system that derives colors from the user's wallpaper). Since Jason's wallpaper had purple/periwinkle tones, the system fed those into the app, completely overriding our coral palette. `values-v31/colors.xml` did the same for Android 12+. Fix: deleted both files.
+
+### Secondary palette: teal → amber
+
+The "Edit profile" button (uses `Widget.Mastodon.M3.Button.Tonal` → `?colorM3SecondaryContainer`) and Posts/Media filter buttons initially used teal (#004F4F dark container). User perceived teal as "blue." Fix: changed entire secondary palette from teal to amber/gold in `colors_masterial.xml`.
+
+### Build environment note
+
+The HANDOFF.md says `JAVA_HOME=$HOME/.jdks/ms-21.0.9/` — this path no longer exists on the current Aurora install. Working path is `JAVA_HOME=/var/home/jason/.local/share/jbr` (copied from Android Studio flatpak's `/app/extra/jbr`). Build command:
+
+```bash
+cd ~/projects/tootsie
+JAVA_HOME=/var/home/jason/.local/share/jbr ./gradlew :mastodon:clean :mastodon:assembleGithubDebug
+```
+
+### Files changed in redesign (commit 3fcd15fb9)
+
+```
+mastodon/src/main/java/.../ui/utils/UiUtils.java              (hardcode MATERIAL3)
+mastodon/src/main/res/drawable/bg_alert.xml                    (28dp → 16dp)
+mastodon/src/main/res/drawable/bg_alert_button.xml             (shape update)
+mastodon/src/main/res/drawable/bg_bottom_sheet.xml            (28dp → 16dp)
+mastodon/src/main/res/drawable/bg_button_m3_*.xml (13 files)  (100dp/20dp → 12dp)
+mastodon/src/main/res/drawable/bg_button_new_posts*.xml        (18dp → 12dp)
+mastodon/src/main/res/drawable/bg_compose_button.xml          (4dp → 16dp)
+mastodon/src/main/res/drawable/bg_m3_*text_field*.xml (4 files)(4dp → 12dp)
+mastodon/src/main/res/drawable/bg_popup.xml                    (4dp → 12dp)
+mastodon/src/main/res/menu/profile_own.xml                     (Collections icon)
+mastodon/src/main/res/values-v31/colors.xml                    (DELETED)
+mastodon/src/main/res/values-v34/colors.xml                    (DELETED)
+mastodon/src/main/res/values/colors.xml                        (coral updates)
+mastodon/src/main/res/values/colors_custom.xml                 (coral/warm overrides)
+mastodon/src/main/res/values/colors_masterial.xml              (full rewrite)
+mastodon/src/main/res/values/styles.xml                       (splash color)
+```
 
 ## Session: June 26, 2026 — Bug Fixes
 
