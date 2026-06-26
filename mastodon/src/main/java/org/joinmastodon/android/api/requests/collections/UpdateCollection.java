@@ -6,27 +6,25 @@ import org.joinmastodon.android.model.Collection;
 /**
  * PATCH /api/v1/collections/:id
  *
- * Updates a collection's metadata. Per the 4.6 spec, title/description
- * updates notify all members, so users see when a collection they are in
- * has been reworded. Only owner can edit.
+ * Updates a collection's metadata.
  */
 public class UpdateCollection extends MastodonAPIRequest<Collection> {
-    public UpdateCollection(String id, String title, String description, String language, String tag) {
+    public UpdateCollection(String id, String name, String description, String language, String tagName) {
         super(HttpMethod.PATCH, "/collections/" + id, Collection.class);
-        setRequestBody(new Request(title, description, language, tag));
+        setRequestBody(new Request(name, description, language, tagName));
     }
 
     private static class Request {
-        public String title;
+        public String name;
         public String description;
         public String language;
-        public String tag;
+        public String tagName;
 
-        public Request(String title, String description, String language, String tag) {
-            this.title = title;
+        public Request(String name, String description, String language, String tagName) {
+            this.name = name;
             this.description = description;
             this.language = language;
-            this.tag = tag;
+            this.tagName = tagName;
         }
     }
 }

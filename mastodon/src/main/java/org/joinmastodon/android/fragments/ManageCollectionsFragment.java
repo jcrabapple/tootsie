@@ -72,19 +72,19 @@ public class ManageCollectionsFragment extends BaseSettingsFragment<Collection> 
 
 	@Override
 	protected void doLoadData(int offset, int count){
-		new GetCollections()
-				.setCallback(new SimpleCallback<>(this){
-					@Override
-					public void onSuccess(List<Collection> result){
-						onDataLoaded(result.stream().map(ManageCollectionsFragment.this::makeItem).collect(Collectors.toList()), false);
-					}
-				})
-				.exec(accountID);
+		new GetCollections(getArguments().getString("account"))
+			.setCallback(new SimpleCallback<>(this){
+				@Override
+				public void onSuccess(GetCollections.Response result){
+					onDataLoaded(result.collections.stream().map(ManageCollectionsFragment.this::makeItem).collect(Collectors.toList()), false);
+				}
+			})
+			.exec(accountID);
 	}
 
 	private ListItem<Collection> makeItem(Collection c){
-		String subtitle=getResources().getQuantityString(R.plurals.collection_member_count, c.accountsCount, c.accountsCount);
-		return new ListItemWithOptionsMenu<>(c.title, subtitle, ManageCollectionsFragment.this, R.drawable.ic_list_alt_24px, ManageCollectionsFragment.this::onCollectionClick, c, false);
+		String subtitle=getResources().getQuantityString(R.plurals.collection_member_count, c.itemCount, c.itemCount);
+		return new ListItemWithOptionsMenu<>(c.name, subtitle, ManageCollectionsFragment.this, R.drawable.ic_list_alt_24px, ManageCollectionsFragment.this::onCollectionClick, c, false);
 	}
 
 	private void onCollectionClick(ListItemWithOptionsMenu<Collection> item){
@@ -112,7 +112,7 @@ public class ManageCollectionsFragment extends BaseSettingsFragment<Collection> 
 		}else if(id==R.id.delete){
 			new M3AlertDialogBuilder(getActivity())
 					.setTitle(R.string.delete_collection)
-					.setMessage(getString(R.string.delete_collection_confirm, item.parentObject.title))
+					.setMessage(getString(R.string.delete_collection_confirm, item.parentObject.name))
 					.setPositiveButton(R.string.delete, (dlg, which)->doDeleteCollection(item.parentObject))
 					.setNegativeButton(R.string.cancel, null)
 					.show();
@@ -169,8 +169,8 @@ public class ManageCollectionsFragment extends BaseSettingsFragment<Collection> 
 		for(ListItem<Collection> item:data){
 			if(item.parentObject.id.equals(ev.collectionID)){
 				item.parentObject=ev.collection;
-				item.title=ev.collection.title;
-				item.subtitle=getResources().getQuantityString(R.plurals.collection_member_count, ev.collection.accountsCount, ev.collection.accountsCount);
+				item.title=ev.collection.name;
+				item.subtitle=getResources().getQuantityString(R.plurals.collection_member_count, ev.collection.itemCount, ev.collection.itemCount);
 				rebindItem(item);
 				break;
 			}
@@ -198,7 +198,7 @@ public class ManageCollectionsFragment extends BaseSettingsFragment<Collection> 
 			return;
 		ListItem<Collection> item=makeItem(ev.collection);
 		data.add(item);
-		((List<ListItem<Collection>>)data).sort(Comparator.comparing(l->l.parentObject.title));
+		((List<ListItem<Collection>>)data).sort(Comparator.comparing(l->l.parentObject.name));
 		itemsAdapter.notifyItemInserted(data.indexOf(item));
 	}
 

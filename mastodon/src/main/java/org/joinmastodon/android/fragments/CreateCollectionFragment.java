@@ -106,7 +106,7 @@ public class CreateCollectionFragment extends BaseSettingsFragment<Void>{
 		titleEdit.setHint(R.string.collection_name);
 		titleEditLayout.updateHint();
 		if(existingCollection!=null)
-			titleEdit.setText(existingCollection.title);
+			titleEdit.setText(existingCollection.name);
 		topView.addView(titleEditLayout);
 
 		// Description (multi-line)
@@ -185,7 +185,7 @@ public class CreateCollectionFragment extends BaseSettingsFragment<Void>{
 			String oldDesc=existingCollection.description!=null ? existingCollection.description : "";
 			String oldLang=existingCollection.language!=null ? existingCollection.language : "";
 			String oldTag=existingCollection.tag!=null ? existingCollection.tag.name : "";
-			if(!title.equals(existingCollection.title) || !description.equals(oldDesc) || !language.equals(oldLang) || !tag.equals(oldTag)){
+			if(!title.equals(existingCollection.name) || !description.equals(oldDesc) || !language.equals(oldLang) || !tag.equals(oldTag)){
 				new UpdateCollection(existingCollection.id, title, description, language, tag)
 						.setCallback(new Callback<>(){
 							@Override

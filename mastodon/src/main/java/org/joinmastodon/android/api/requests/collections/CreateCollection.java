@@ -6,27 +6,25 @@ import org.joinmastodon.android.model.Collection;
 /**
  * POST /api/v1/collections
  *
- * Creates a new collection. Per FEP-7aa9, accounts must opt into "Feature
- * me in discovery experiences" to be eligible for inclusion; opted-in
- * accounts are notified when added.
+ * Creates a new collection.
  */
 public class CreateCollection extends MastodonAPIRequest<Collection> {
-    public CreateCollection(String title, String description, String language, String tag) {
+    public CreateCollection(String name, String description, String language, String tagName) {
         super(HttpMethod.POST, "/collections", Collection.class);
-        setRequestBody(new Request(title, description, language, tag));
+        setRequestBody(new Request(name, description, language, tagName));
     }
 
     private static class Request {
-        public String title;
+        public String name;
         public String description;
-        public String language; // ISO 639-1 (e.g. "en")
-        public String tag; // hashtag name without leading #
+        public String language;
+        public String tagName;
 
-        public Request(String title, String description, String language, String tag) {
-            this.title = title;
+        public Request(String name, String description, String language, String tagName) {
+            this.name = name;
             this.description = description;
             this.language = language;
-            this.tag = tag;
+            this.tagName = tagName;
         }
     }
 }

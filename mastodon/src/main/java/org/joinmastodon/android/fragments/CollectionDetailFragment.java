@@ -87,10 +87,10 @@ public class CollectionDetailFragment extends BaseStatusListFragment<Collection>
 				c.id,
 				this,
 				getActivity(),
-				c.title,
+				c.name,
 				c.description,
 				c.tag,
-				c.accountsCount,
+				c.itemCount,
 				c.language,
 				c.createdAt,
 				c.updatedAt,
@@ -150,10 +150,13 @@ public class CollectionDetailFragment extends BaseStatusListFragment<Collection>
 		new GetCollection(collectionID)
 				.setCallback(new Callback<>() {
 					@Override
-					public void onSuccess(Collection result) {
-						// Cache in the session layer so Featured tab can reference it
-						AccountSessionManager.get(accountID).getCacheController().addCollection(result);
-						onDataLoaded(Collections.singletonList(result), false);
+					public void onSuccess(GetCollection.Response result) {
+						Collection c = result.collection;
+						if (result.accounts != null) {
+							c.accounts = result.accounts;
+						}
+						AccountSessionManager.get(accountID).getCacheController().addCollection(c);
+						onDataLoaded(Collections.singletonList(c), false);
 					}
 
 					@Override
@@ -188,8 +191,8 @@ public class CollectionDetailFragment extends BaseStatusListFragment<Collection>
 	@Override
 	public Uri getWebUri(Uri.Builder base) {
 		Collection c = findFirstDataItem();
-		if (c != null && !TextUtils.isEmpty(c.featured)) {
-			return Uri.parse(c.featured);
+		if (c != null && !TextUtils.isEmpty(c.url)) {
+			return Uri.parse(c.url);
 		}
 		return null;
 	}

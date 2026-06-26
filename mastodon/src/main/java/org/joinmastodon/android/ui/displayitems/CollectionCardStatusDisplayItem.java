@@ -47,10 +47,10 @@ public class CollectionCardStatusDisplayItem extends StatusDisplayItem{
 		@Override
 		public void onBind(CollectionCardStatusDisplayItem item){
 			Collection c=item.collection;
-			title.setText(c.title);
+			title.setText(c.name);
 
 			memberCount.setText(itemView.getResources().getQuantityString(
-					R.plurals.collection_member_count, c.accountsCount, c.accountsCount));
+					R.plurals.collection_member_count, c.itemCount, c.itemCount));
 
 			if(!TextUtils.isEmpty(c.description)){
 				description.setText(c.description);

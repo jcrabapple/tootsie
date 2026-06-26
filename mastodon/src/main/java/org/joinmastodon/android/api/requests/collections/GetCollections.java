@@ -8,12 +8,18 @@ import org.joinmastodon.android.model.Collection;
 import java.util.List;
 
 /**
- * GET /api/v1/collections
+ * GET /api/v1/accounts/:id/collections
  *
- * Lists collections owned by the authenticated user.
+ * Lists collections owned by the given account.
+ * Response is wrapped: {"collections": [...]}
  */
-public class GetCollections extends MastodonAPIRequest<List<Collection>> {
-    public GetCollections() {
-        super(HttpMethod.GET, "/collections", new TypeToken<>() {});
+public class GetCollections extends MastodonAPIRequest<GetCollections.Response> {
+
+    public GetCollections(String accountId) {
+        super(HttpMethod.GET, "/accounts/" + accountId + "/collections", new TypeToken<>() {});
+    }
+
+    public static class Response {
+        public List<Collection> collections;
     }
 }

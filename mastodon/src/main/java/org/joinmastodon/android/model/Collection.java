@@ -29,11 +29,11 @@ public class Collection extends BaseModel implements DisplayItemsParent {
     @RequiredField
     public String id;
     @RequiredField
-    public String title;
+    public String name;
     public String description;
-    public int accountsCount;
-    public List<Account> accounts; // null on list endpoints, populated on detail
-    public String featured; // public shareable URL
+    public int itemCount;
+    public List<Account> accounts; // populated on show endpoint only
+    public String url; // public shareable URL
     public String language; // ISO 639-1 (e.g. "en")
     public Hashtag tag; // optional single topic hashtag
     @RequiredField
@@ -55,7 +55,6 @@ public class Collection extends BaseModel implements DisplayItemsParent {
             tag.postprocess();
         }
         if (description == null) description = "";
-        if (featured == null) featured = "";
         if (language == null) language = "";
     }
 
@@ -68,8 +67,8 @@ public class Collection extends BaseModel implements DisplayItemsParent {
     public String toString() {
         return "Collection{" +
                 "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", accountsCount=" + accountsCount +
+                ", name='" + name + '\'' +
+                ", itemCount=" + itemCount +
                 ", language='" + language + '\'' +
                 ", tag=" + tag +
                 '}';

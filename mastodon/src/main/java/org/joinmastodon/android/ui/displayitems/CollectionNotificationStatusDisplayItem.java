@@ -66,7 +66,7 @@ public class CollectionNotificationStatusDisplayItem extends StatusDisplayItem{
 				: "Someone";
 
 		if(cachedCollection!=null){
-			String title=cachedCollection.title;
+			String title=cachedCollection.name;
 			if(isAdded){
 				text=context.getString(R.string.added_to_collection, bold(accountName), bold(title));
 			}else{
