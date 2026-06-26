@@ -30,6 +30,7 @@ import me.grishka.appkit.api.ErrorResponse;
 import me.grishka.appkit.utils.MergeRecyclerAdapter;
 import me.grishka.appkit.utils.SingleViewRecyclerAdapter;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -74,7 +75,14 @@ public class CreateCollectionFragment extends BaseSettingsFragment<Void>{
 	}
 
 	@Override
-	protected void doLoadData(int offset, int count){}
+	protected void doLoadData(int offset, int count){
+		// This is a form fragment, not a data-loading list. Signal to
+		// BaseRecyclerFragment that there's no data so it calls showContent()
+		// (hides the centered spinner, shows the form) and sets loaded=true.
+		// Without this, if loadData() is ever triggered (e.g. by refresh()),
+		// the progress spinner shows forever and the form is hidden.
+		onDataLoaded(Collections.emptyList(), false);
+	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState){
