@@ -75,22 +75,19 @@ All committed, all pushed, all building green:
 
 ### Priority 2: Discovery (Featured tab integration)
 
-- [ ] **`ProfileFeaturedFragment` integration** — add a "Collections" section to the Featured tab. NOT by extending the polymorphic `SearchResult` (which would touch every switch in the codebase) — instead, embed a dedicated sub-fragment inside the Featured tab area. The existing `showAllEndorsedAccounts()` stub is the natural place.
+- [x] **`ProfileFeaturedFragment` integration** — Done in commit `cd4321d89`. Extended `SearchResult` with a `COLLECTION` variant, created `CollectionCardStatusDisplayItem` (compact card), and updated the Featured tab to load collections via `GetAccountCollections` and render up to 3 collection cards. Tapping a card opens `CollectionDetailFragment`.
 
 ### Priority 3: Authoring (your own collections)
 
-- [ ] **`ManageCollectionsFragment`** — list of collections owned by the current account. Entry point: a "Manage collections" button in your own profile's menu. Uses `GetCollections` API request.
-- [ ] **`CreateCollectionFragment`** — create/edit form. Fields: title, description (multi-line), language, tag (single hashtag picker). Uses `CreateCollection` / `UpdateCollection`.
-- [ ] **`AddToCollectionFragment`** — multi-select account picker for adding members to a collection. Uses `AddAccountsToCollection`. **Respect `account.interactionPolicy.canFeature`** here:
-  - `PUBLIC` → add without confirmation, show inline notice
-  - `FOLLOWERS` → check viewer-follows-account, reject if not follower, otherwise proceed
-  - `MANUAL` → show a "Request to be added" sheet; the account owner will get a notification and accept/deny
-  - If account `discoverable == false` → show "This account has opted out of collections" and disable add
+- [x] **`ManageCollectionsFragment`** — Done in commit `b0d33f209`. Lists collections owned by the current account. FAB → CreateCollectionFragment. Kebab menu per row: Edit / Delete. Otto event subscriptions for created/updated/deleted. Entry point: "Manage collections" menu item on own-profile menu (`profile_own.xml`).
+- [x] **`CreateCollectionFragment`** — Done in commit `b0d33f209`. Create or edit a collection (title, description, language, tag). Form built with `FloatingHintEditTextLayout` fields. Create mode: `CreateCollection` API → `CollectionCreatedEvent`. Edit mode: `UpdateCollection` API → `CollectionUpdatedEvent`.
+- [x] **`AddToCollectionFragment` + `AddCollectionMembersSearchFragment`** — Done in commit `b0d33f209`. Member picker modeled on `CreateListAddMembersFragment`. Enforces `interactionPolicy.canFeature`: PUBLIC → add immediately, FOLLOWERS → check relationship, reject if not following, MANUAL → informational dialog (server queues for approval), `discoverable=false` → blocked with snackbar, 25-member cap checked locally.
 
 ### Priority 4: Notifications
 
-- [ ] Wire `NotificationType.ADDED_TO_COLLECTION` into `BaseNotificationsListFragment`'s row layout — render the Collection's title + description snippet + a "View" button + a "Remove me from this collection" button (uses `RevokeCollectionMembership`)
-- [ ] Wire `NotificationType.COLLECTION_UPDATE` — render "X updated the collection Y" with a "View" button. The body should show what changed (title/description diff).
+- [x] **`ADDED_TO_COLLECTION` notification UI** — Done in commit `736652176`. `CollectionNotificationStatusDisplayItem` renders "X added you to the collection Y" with a View button (opens `CollectionDetailFragment`) and a Remove me button (confirmation → `RevokeCollectionMembership`).
+- [x] **`COLLECTION_UPDATE` notification UI** — Done in commit `736652176`. Same display item, renders "X updated the collection Y" with a View button (no Remove me for this type).
+- [x] `NotificationGroup.java` extended with `collectionId` field for the grouped notifications API.
 
 ### Priority 5: Polish
 
