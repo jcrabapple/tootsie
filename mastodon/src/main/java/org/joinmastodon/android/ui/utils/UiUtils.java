@@ -794,7 +794,7 @@ public class UiUtils{
 		setUserPreferredTheme(context, null);
 	}
 
-	// MOSHIDON:
+	// MOSHIDON: (TOOTSIE: skip Moshidon palette overlay — base theme already uses Tootsie coral)
 	public static void setUserPreferredTheme(Context context, @Nullable AccountSession session) {
 		context.setTheme(switch(theme) {
 			case LIGHT -> R.style.Theme_Mastodon_Light;
@@ -802,8 +802,9 @@ public class UiUtils{
 			default -> R.style.Theme_Mastodon_AutoLightDark;
 		});
 
-		AccountLocalPreferences prefs=session!=null ? session.getLocalPreferences() : null;
-		AccountLocalPreferences.ColorPreference color=prefs!=null ? prefs.getCurrentColor() : AccountLocalPreferences.ColorPreference.MATERIAL3;
+		// TOOTSIE: apply Material3 palette (which reads m3_sys_* → tootsieLight/Dark_* = coral)
+		// instead of the user's saved Moshidon color preference (purple/pink/etc.)
+		AccountLocalPreferences.ColorPreference color = AccountLocalPreferences.ColorPreference.MATERIAL3;
 		ColorPalette palette = ColorPalette.palettes.get(color);
 		if (palette != null) palette.apply(context, theme);
 

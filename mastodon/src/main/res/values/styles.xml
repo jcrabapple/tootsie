@@ -409,7 +409,7 @@
 	</style>
 
 	<style name="Theme.Mastodon.Dark.SplashFragment">
-		<item name="colorM3Primary">#006B5E</item>
+		<item name="colorM3Primary">#C00013</item>
 		<item name="colorM3OnPrimary">#FFF</item>
 		<item name="colorM3Outline">#FFF</item>
 		<item name="colorM3OnSurface">#FFF</item>

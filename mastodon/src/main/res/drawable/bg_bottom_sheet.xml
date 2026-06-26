@@ -3,7 +3,7 @@
 	<item android:bottom="-28dp">
 		<shape android:tint="@color/m3_primary_alpha5" android:tintMode="src_over">
 			<solid android:color="?colorM3Surface"/>
-			<corners android:radius="28dp"/>
+			<corners android:radius="16dp"/>
 		</shape>
 	</item>
 </layer-list>

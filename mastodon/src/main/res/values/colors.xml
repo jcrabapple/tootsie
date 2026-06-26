@@ -4,11 +4,11 @@
 
 <!--	<color name="primary_700">#431cbb</color>-->
 
-	<color name="navigation_bar_bg_light">#282C37</color>
+	<color name="navigation_bar_bg_light">#1A1C1A</color>
 	<color name="highlight_over_dark">#30FFFFFF</color>
 
-	<!-- TOOTSIE: launcher icon background (teal) -->
-	<color name="ic_launcher_background">#006B5E</color>
+	<!-- TOOTSIE: launcher icon background (coral) -->
+	<color name="ic_launcher_background">#C00013</color>
 
 <!--	<color name="shortcut_icon_background">#FFF</color>-->
 <!--	<color name="shortcut_icon_foreground">@color/m3_sys_light_primary</color>-->
@@ -84,22 +84,23 @@
 	<color name="ext_on_favorite_container_light_high_contrast">#503800</color>
 	<color name="ext_on_favorite_container_light_medium_contrast">#503800</color>
 	<color name="ext_on_favorite_container_dark">#463100</color>
-	<color name="ext_boost_light">#006C4E</color>
-	<color name="ext_boost_light_high_contrast">#006C4E</color>
-	<color name="ext_boost_light_medium_contrast">#006C4E</color>
-	<color name="ext_boost_dark">#48DEAB</color>
+	<!-- TOOTSIE: boost = teal (our secondary color) -->
+	<color name="ext_boost_light">#006969</color>
+	<color name="ext_boost_light_high_contrast">#003737</color>
+	<color name="ext_boost_light_medium_contrast">#004F4F</color>
+	<color name="ext_boost_dark">#4ED8C4</color>
 	<color name="ext_on_boost_light">#FFFFFF</color>
 	<color name="ext_on_boost_light_high_contrast">#FFFFFF</color>
 	<color name="ext_on_boost_light_medium_contrast">#FFFFFF</color>
-	<color name="ext_on_boost_dark">#003827</color>
-	<color name="ext_boost_container_light">#25C896</color>
-	<color name="ext_boost_container_light_high_contrast">#25C896</color>
-	<color name="ext_boost_container_light_medium_contrast">#25C896</color>
-	<color name="ext_boost_container_dark">#00B384</color>
-	<color name="ext_on_boost_container_light">#002C1E</color>
-	<color name="ext_on_boost_container_light_high_contrast">#002C1E</color>
-	<color name="ext_on_boost_container_light_medium_contrast">#002C1E</color>
-	<color name="ext_on_boost_container_dark">#00130B</color>
+	<color name="ext_on_boost_dark">#003737</color>
+	<color name="ext_boost_container_light">#A8F0EE</color>
+	<color name="ext_boost_container_light_high_contrast">#A8F0EE</color>
+	<color name="ext_boost_container_light_medium_contrast">#A8F0EE</color>
+	<color name="ext_boost_container_dark">#004F4F</color>
+	<color name="ext_on_boost_container_light">#002020</color>
+	<color name="ext_on_boost_container_light_high_contrast">#002020</color>
+	<color name="ext_on_boost_container_light_medium_contrast">#002020</color>
+	<color name="ext_on_boost_container_dark">#A8F0EE</color>
 	<color name="ext_bookmark_light">#A2003E</color>
 	<color name="ext_bookmark_light_high_contrast">#A2003E</color>
 	<color name="ext_bookmark_light_medium_contrast">#A2003E</color>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:id="@+id/share" android:title="@string/share_user" android:icon="@drawable/ic_share_24px" android:showAsAction="always"/>
-	<!-- TOOTSIE: FEP-7aa9 / Mastodon 4.6 — manage collections -->
-	<item android:id="@+id/manage_collections" android:title="@string/manage_collections"/>
+	<!-- TOOTSIE: FEP-7aa9 / Mastodon 4.6 — manage collections, shown as action icon -->
+	<item android:id="@+id/manage_collections" android:title="@string/manage_collections" android:icon="@drawable/ic_fluent_collections_24_regular" android:showAsAction="always"/>
 </menu>
