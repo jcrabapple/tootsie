@@ -56,7 +56,7 @@
     <string name="mo_setting_reduced_motion_summary">Désactiver les animations des interactions</string>
     <string name="mo_load_remote_followers">Charger les abonné·e·s et les abonnements distant·e·s</string>
     <string name="mo_severity_suspend">Bloqué·e</string>
-    <string name="mo_repo_url">https://github.com/LucasGGamerM/moshidon</string>
+    <string name="mo_repo_url">https://github.com/jcrabapple/tootsie</string>
     <string name="mo_donate_url">https://github.com/sponsors/LucasGGamerM</string>
     <string name="mo_setting_play_gif_summary">Animer les émojis et les GIFs des avatars</string>
     <string name="mo_setting_haptic_feedback_summary">Vibrer lors de l’interaction avec les publications</string>

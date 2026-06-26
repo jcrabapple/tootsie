@@ -76,7 +76,7 @@
     <string name="mo_color_palette_black_and_white">Blanco y Negro</string>
     <string name="mo_donate_url">https://github.com/sponsors/LucasGGamerM</string>
     <string name="mo_settings_show_posts_without_alt">Mostrar las publicaciones con multimedia que carece de un texto alternativo</string>
-    <string name="mo_repo_url">https://github.com/LucasGGamerM/moshidon</string>
+    <string name="mo_repo_url">https://github.com/jcrabapple/tootsie</string>
     <string name="mo_settings_show_posts_without_alt_summary">Las publicaciones estarán ocultas en todas las cronologías, pero se pueden mostrar en los hilos y las notificaciones</string>
     <string name="mo_show_media_preview">Mostrar previsualización de multimedia en la cronología</string>
     <string name="mo_recent_emoji_cleared">Emojis recientes eliminados</string>
