@@ -1,5 +1,6 @@
 package org.joinmastodon.android.api.requests.oauth;
 
+import org.joinmastodon.android.BuildConfig;
 import org.joinmastodon.android.api.MastodonAPIRequest;
 import org.joinmastodon.android.api.session.AccountSessionManager;
 import org.joinmastodon.android.model.Application;
@@ -11,7 +12,7 @@ public class CreateOAuthApp extends MastodonAPIRequest<Application>{
 	}
 
 	private static class Request{
-		public String clientName="Tootsie";
+		public String clientName=BuildConfig.DEBUG ? "Tootsie-Debug" : "Tootsie";
 		public String redirectUris=AccountSessionManager.REDIRECT_URI;
 		public String scopes=AccountSessionManager.SCOPE;
 		public String website="https://github.com/jcrabapple/tootsie";
