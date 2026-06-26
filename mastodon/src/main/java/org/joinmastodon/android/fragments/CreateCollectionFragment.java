@@ -95,6 +95,10 @@ public class CreateCollectionFragment extends BaseSettingsFragment<Void>{
 		nextButton.setText(existingCollection!=null ? R.string.save : R.string.create);
 		buttonBar=view.findViewById(R.id.button_bar);
 		super.onViewCreated(view, savedInstanceState);
+		// Show the form immediately. BaseRecyclerFragment leaves the spinner
+		// visible by default; onDataLoaded triggers showContent() which hides
+		// the spinner and reveals the RecyclerView with the form fields.
+		onDataLoaded(Collections.emptyList(), false);
 	}
 
 	@Override
