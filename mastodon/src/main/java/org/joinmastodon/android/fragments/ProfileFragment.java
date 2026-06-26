@@ -891,6 +891,12 @@ public class ProfileFragment extends LoaderFragment implements ScrollableToTop, 
 			getActivity().getSystemService(ClipboardManager.class).setPrimaryClip(ClipData.newPlainText(null, account.url));
 			UiUtils.maybeShowTextCopiedToast(getActivity());
 		}
+		// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — manage collections menu item (own profile)
+		else if(id==R.id.manage_collections){
+			Bundle args=new Bundle();
+			args.putString("account", accountID);
+			Nav.go(getActivity(), ManageCollectionsFragment.class, args);
+		}
 		return true;
 	}
 
