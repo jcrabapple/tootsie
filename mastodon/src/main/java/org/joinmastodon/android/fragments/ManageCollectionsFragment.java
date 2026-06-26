@@ -72,14 +72,14 @@ public class ManageCollectionsFragment extends BaseSettingsFragment<Collection> 
 
 	@Override
 	protected void doLoadData(int offset, int count){
-		new GetCollections(getArguments().getString("account"))
-			.setCallback(new SimpleCallback<>(this){
-				@Override
-				public void onSuccess(GetCollections.Response result){
-					onDataLoaded(result.collections.stream().map(ManageCollectionsFragment.this::makeItem).collect(Collectors.toList()), false);
-				}
-			})
-			.exec(accountID);
+		new GetCollections(AccountSessionManager.get(accountID).self.id)
+				.setCallback(new SimpleCallback<>(this){
+					@Override
+					public void onSuccess(GetCollections.Response result){
+						onDataLoaded(result.collections.stream().map(ManageCollectionsFragment.this::makeItem).collect(Collectors.toList()), false);
+					}
+				})
+				.exec(accountID);
 	}
 
 	private ListItem<Collection> makeItem(Collection c){
