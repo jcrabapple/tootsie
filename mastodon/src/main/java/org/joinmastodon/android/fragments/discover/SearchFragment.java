@@ -65,6 +65,8 @@ public class SearchFragment extends BaseStatusListFragment<SearchResult>{
 			case ACCOUNT -> Collections.singletonList(new AccountStatusDisplayItem(s.id, this, getActivity(), s.account, accountID));
 			case HASHTAG -> Collections.singletonList(new HashtagStatusDisplayItem(s.id, this, getActivity(), s.hashtag));
 			case STATUS -> StatusDisplayItem.buildItems(this, s.status, accountID, s, knownAccounts, true);
+			// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — collections don't appear in search results
+			case COLLECTION -> Collections.emptyList();
 		};
 	}
 
@@ -74,6 +76,8 @@ public class SearchFragment extends BaseStatusListFragment<SearchResult>{
 			case ACCOUNT -> s.account;
 			case STATUS -> s.status.account;
 			case HASHTAG -> null;
+			// TOOTSIE: FEP-7aa9 / Mastodon 4.6
+			case COLLECTION -> null;
 		};
 		if(acc!=null && !knownAccounts.containsKey(acc.id))
 			knownAccounts.put(acc.id, acc);
@@ -119,6 +123,8 @@ public class SearchFragment extends BaseStatusListFragment<SearchResult>{
 				case ACCOUNT -> GetSearchResults.Type.ACCOUNTS;
 				case HASHTAG -> GetSearchResults.Type.HASHTAGS;
 				case STATUS -> GetSearchResults.Type.STATUSES;
+				// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — no search API for collections
+				case COLLECTION -> null;
 			};
 		}else{
 			type=null;

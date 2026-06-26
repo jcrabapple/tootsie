@@ -8,6 +8,8 @@ public class SearchResult extends BaseModel implements DisplayItemsParent{
 	public Account account;
 	public Hashtag hashtag;
 	public Status status;
+	// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — Collections in the Featured tab
+	public Collection collection;
 	@RequiredField
 	public Type type;
 
@@ -34,6 +36,13 @@ public class SearchResult extends BaseModel implements DisplayItemsParent{
 		generateID();
 	}
 
+	// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — Collections in the Featured tab
+	public SearchResult(Collection collection){
+		this.collection=collection;
+		type=Type.COLLECTION;
+		generateID();
+	}
+
 	@Override
 	public String getID(){
 		return id;
@@ -55,6 +64,9 @@ public class SearchResult extends BaseModel implements DisplayItemsParent{
 			hashtag.postprocess();
 		if(status!=null)
 			status.postprocess();
+		// TOOTSIE: FEP-7aa9 / Mastodon 4.6
+		if(collection!=null)
+			collection.postprocess();
 		generateID();
 	}
 
@@ -63,12 +75,16 @@ public class SearchResult extends BaseModel implements DisplayItemsParent{
 			case ACCOUNT -> "acc_"+account.id;
 			case HASHTAG -> "tag_"+hashtag.name.hashCode();
 			case STATUS -> "post_"+status.id;
+			// TOOTSIE: FEP-7aa9 / Mastodon 4.6
+			case COLLECTION -> "col_"+collection.id;
 		};
 	}
 
 	public enum Type{
 		ACCOUNT,
 		HASHTAG,
-		STATUS
+		STATUS,
+		// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — Collections in the Featured tab
+		COLLECTION
 	}
 }

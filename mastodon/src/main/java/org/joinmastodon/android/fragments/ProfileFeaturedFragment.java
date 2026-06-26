@@ -10,11 +10,14 @@ import android.view.View;
 import org.joinmastodon.android.R;
 import org.joinmastodon.android.api.requests.accounts.GetAccountFeaturedHashtags;
 import org.joinmastodon.android.api.requests.accounts.GetAccountStatuses;
+import org.joinmastodon.android.api.requests.collections.GetAccountCollections;
 import org.joinmastodon.android.model.Account;
+import org.joinmastodon.android.model.Collection;
 import org.joinmastodon.android.model.Hashtag;
 import org.joinmastodon.android.model.SearchResult;
 import org.joinmastodon.android.model.Status;
 import org.joinmastodon.android.ui.displayitems.AccountStatusDisplayItem;
+import org.joinmastodon.android.ui.displayitems.CollectionCardStatusDisplayItem;
 import org.joinmastodon.android.ui.displayitems.FooterStatusDisplayItem;
 import org.joinmastodon.android.ui.displayitems.HashtagStatusDisplayItem;
 import org.joinmastodon.android.ui.displayitems.SectionHeaderStatusDisplayItem;
@@ -35,7 +38,9 @@ public class ProfileFeaturedFragment extends BaseStatusListFragment<SearchResult
 	private List<Hashtag> featuredTags;
 //	private List<Account> endorsedAccounts;
 	private List<Status> pinnedStatuses;
-	private boolean tagsLoaded, statusesLoaded;
+	// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — Collections that include this account
+	private List<Collection> collections;
+	private boolean tagsLoaded, statusesLoaded, collectionsLoaded;
 
 	public ProfileFeaturedFragment(){
 		setListLayoutId(R.layout.recycler_fragment_no_refresh);
@@ -53,6 +58,8 @@ public class ProfileFeaturedFragment extends BaseStatusListFragment<SearchResult
 			case ACCOUNT -> new ArrayList<>(Collections.singletonList(new AccountStatusDisplayItem(s.id, this, getActivity(), s.account, accountID)));
 			case HASHTAG -> new ArrayList<>(Collections.singletonList(new HashtagStatusDisplayItem(s.id, this, getActivity(), s.hashtag)));
 			case STATUS -> StatusDisplayItem.buildItems(this, s.status, accountID, s, knownAccounts, true);
+			// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — compact collection card
+			case COLLECTION -> new ArrayList<>(Collections.singletonList(new CollectionCardStatusDisplayItem(s.id, this, getActivity(), s.collection)));
 		};
 
 		if(s.firstInSection){
@@ -60,10 +67,14 @@ public class ProfileFeaturedFragment extends BaseStatusListFragment<SearchResult
 				case ACCOUNT -> R.string.profile_endorsed_accounts;
 				case HASHTAG -> R.string.hashtags;
 				case STATUS -> R.string.posts;
+				// TOOTSIE: FEP-7aa9 / Mastodon 4.6
+				case COLLECTION -> R.string.collections;
 			}), getString(R.string.view_all), switch(s.type){
 				case ACCOUNT -> (Runnable)this::showAllEndorsedAccounts;
 				case HASHTAG -> (Runnable)this::showAllFeaturedHashtags;
 				case STATUS -> (Runnable)this::showAllPinnedPosts;
+				// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — no "view all" for collections yet
+				case COLLECTION -> null;
 			}));
 		}
 
@@ -76,6 +87,8 @@ public class ProfileFeaturedFragment extends BaseStatusListFragment<SearchResult
 			case ACCOUNT -> s.account;
 			case STATUS -> s.status.account;
 			case HASHTAG -> null;
+			// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — no account at top level for collection cards
+			case COLLECTION -> null;
 		};
 		if(acc!=null && !knownAccounts.containsKey(acc.id))
 			knownAccounts.put(acc.id, acc);
@@ -114,6 +127,14 @@ public class ProfileFeaturedFragment extends BaseStatusListFragment<SearchResult
 					args.putParcelable("inReplyToAccount", Parcels.wrap(knownAccounts.get(status.inReplyToAccountId)));
 				Nav.go(getActivity(), ThreadFragment.class, args);
 			}
+			// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — open the collection detail view
+			case COLLECTION -> {
+				Bundle args=new Bundle();
+				args.putString("account", accountID);
+				args.putString("collectionID", res.collection.id);
+				args.putParcelable("collection", Parcels.wrap(res.collection));
+				Nav.go(getActivity(), CollectionDetailFragment.class, args);
+			}
 		}
 	}
 
@@ -121,27 +142,40 @@ public class ProfileFeaturedFragment extends BaseStatusListFragment<SearchResult
 	protected void doLoadData(int offset, int count){
 		if(!statusesLoaded){
 			new GetAccountStatuses(profileAccount.id, null, null, 2, GetAccountStatuses.Filter.PINNED, null)
-					 .setCallback(new SimpleCallback<>(this){
-						  @Override
-						  public void onSuccess(List<Status> result){
-							  pinnedStatuses=result;
-							  statusesLoaded=true;
-							  onOneApiRequestCompleted();
-						  }
-					 })
-					 .exec(accountID);
+				 .setCallback(new SimpleCallback<>(this){
+					  @Override
+					  public void onSuccess(List<Status> result){
+						  pinnedStatuses=result;
+						  statusesLoaded=true;
+						  onOneApiRequestCompleted();
+					  }
+				 })
+				 .exec(accountID);
 		}
 		if(!tagsLoaded){
 			new GetAccountFeaturedHashtags(profileAccount.id)
-					 .setCallback(new SimpleCallback<>(this){
-						  @Override
-						  public void onSuccess(List<Hashtag> result){
-							  featuredTags=result;
-							  tagsLoaded=true;
-							  onOneApiRequestCompleted();
-						  }
-					 })
-					 .exec(accountID);
+				 .setCallback(new SimpleCallback<>(this){
+					  @Override
+					  public void onSuccess(List<Hashtag> result){
+						  featuredTags=result;
+						  tagsLoaded=true;
+						  onOneApiRequestCompleted();
+					  }
+				 })
+				 .exec(accountID);
+		}
+		// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — load collections that include this account
+		if(!collectionsLoaded){
+			new GetAccountCollections(profileAccount.id)
+				 .setCallback(new SimpleCallback<>(this){
+					  @Override
+					  public void onSuccess(List<Collection> result){
+						  collections=result;
+						  collectionsLoaded=true;
+						  onOneApiRequestCompleted();
+					  }
+				 })
+				 .exec(accountID);
 		}
 	}
 
@@ -156,13 +190,15 @@ public class ProfileFeaturedFragment extends BaseStatusListFragment<SearchResult
 	public void onRefresh(){
 		statusesLoaded=false;
 		tagsLoaded=false;
+		// TOOTSIE: FEP-7aa9 / Mastodon 4.6
+		collectionsLoaded=false;
 		super.onRefresh();
 	}
 
 	private void onOneApiRequestCompleted(){
 		if(getActivity()==null)
 			return;
-		if(tagsLoaded && statusesLoaded){
+		if(tagsLoaded && statusesLoaded && collectionsLoaded){
 			ArrayList<SearchResult> results=new ArrayList<>();
 			for(int i=0;i<Math.min(2, pinnedStatuses.size());i++){
 				SearchResult res=new SearchResult(pinnedStatuses.get(i));
@@ -173,6 +209,14 @@ public class ProfileFeaturedFragment extends BaseStatusListFragment<SearchResult
 				SearchResult res=new SearchResult(featuredTags.get(i));
 				res.firstInSection=(i==0);
 				results.add(res);
+			}
+			// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — show up to 3 collections
+			if(collections!=null){
+				for(int i=0;i<Math.min(3, collections.size());i++){
+					SearchResult res=new SearchResult(collections.get(i));
+					res.firstInSection=(i==0);
+					results.add(res);
+				}
 			}
 			onDataLoaded(results, false);
 		}

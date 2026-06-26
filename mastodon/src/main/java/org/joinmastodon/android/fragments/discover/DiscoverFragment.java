@@ -349,6 +349,8 @@ public class DiscoverFragment extends AppKitFragment implements ScrollableToTop{
 			case STATUS -> 0;
 			case HASHTAG -> 1;
 			case ACCOUNT -> 2;
+			// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — no search tab for collections
+			case COLLECTION -> 0;
 		};
 		if(searchTabLayout.getSelectedTabPosition()==tab)
 			return;

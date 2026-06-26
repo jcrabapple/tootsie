@@ -116,6 +116,8 @@ public abstract class StatusDisplayItem{
 			case EMOJI_REACTIONS -> new EmojiReactionsStatusDisplayItem.Holder(activity, parent);
 			// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — collection metadata header
 			case COLLECTION_HEADER -> new CollectionHeaderStatusDisplayItem.Holder(activity, parent);
+			// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — compact collection card for Featured tab
+			case COLLECTION_CARD -> new CollectionCardStatusDisplayItem.Holder(activity, parent);
 		};
 	}
 
@@ -309,7 +311,9 @@ public abstract class StatusDisplayItem{
 		DUMMY,
 		EMOJI_REACTIONS,
 		// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — collection metadata header
-		COLLECTION_HEADER
+		COLLECTION_HEADER,
+		// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — compact collection card for Featured tab
+		COLLECTION_CARD
 	}
 
 	public static abstract class Holder<T> extends BindableViewHolder<T> implements UsableRecyclerView.DisableableClickable{
