@@ -137,12 +137,8 @@ public class PersonalTimelineFragment extends StatusListFragment
 						// Track max_id for pagination
 						lastMaxId = result.get(result.size() - 1).id;
 
-						// Tag each candidate with all enabled topics for display
+						// Clear topic map — will be populated after ranking
 						topicMap.clear();
-						for (Status s : result) {
-							Status actual = s.reblog != null ? s.reblog : s;
-							topicMap.put(actual.id, new ArrayList<>(enabledTopics));
-						}
 
 						// Sort by date for immediate display
 						result.sort(Comparator.comparing((Status s) -> s.createdAt).reversed());
@@ -220,15 +216,43 @@ public class PersonalTimelineFragment extends StatusListFragment
 				List<ForYouScorer.ScoredPost> ranked = ForYouScorer.score(
 						candidates, similarities, topicMap, dismissedIds);
 
-				// Extract sorted statuses
-				List<Status> sorted = new ArrayList<>();
-				for (ForYouScorer.ScoredPost sp : ranked) {
-					sorted.add(sp.status);
+				// Cap to top 20 results
+				int maxResults = Math.min(ranked.size(), 20);
+
+				// Build topic map from actual similarity scores
+				// Only assign topics whose interest vectors are closest to each post
+				Map<String, List<String>> newTopicMap = new java.util.concurrent.ConcurrentHashMap<>();
+				for (int i = 0; i < candidateVectors.size(); i++) {
+					float[] cVec = candidateVectors.get(i);
+					if (cVec == null) continue;
+					Status s = candidates.get(i);
+					Status actual = s.reblog != null ? s.reblog : s;
+
+					// Find which interest vectors are closest (top 2 topics)
+					List<String> matchedTopics = new ArrayList<>();
+					for (Map.Entry<String, float[]> entry : interestVectors.entrySet()) {
+						float sim = EmbeddingClient.cosineSimilarity(cVec, entry.getValue());
+						if (sim > 0.25f) {
+							matchedTopics.add(entry.getKey());
+						}
+					}
+					if (!matchedTopics.isEmpty()) {
+						newTopicMap.put(actual.id, matchedTopics);
+					}
 				}
 
-				// Update UI on main thread
+				// Extract sorted statuses (capped)
+				List<Status> sorted = new ArrayList<>();
+				for (int i = 0; i < maxResults; i++) {
+					sorted.add(ranked.get(i).status);
+				}
+
+				// Update topic map and UI on main thread
+				Map<String, List<String>> finalTopicMap = newTopicMap;
 				new Handler(Looper.getMainLooper()).post(() -> {
 					if (getActivity() == null) return;
+					topicMap.clear();
+					topicMap.putAll(finalTopicMap);
 					data.clear();
 					displayItems.clear();
 					for (Status s : sorted) {

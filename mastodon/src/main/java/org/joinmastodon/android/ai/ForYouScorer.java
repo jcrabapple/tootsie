@@ -43,7 +43,7 @@ public class ForYouScorer {
 	private static final float JITTER_RANGE = 0.08f;
 
 	// Minimum similarity threshold — posts below this are filtered out
-	private static final float MIN_SIMILARITY_THRESHOLD = 0.15f;
+	private static final float MIN_SIMILARITY_THRESHOLD = 0.30f;
 
 	private static final Random random = new Random();
 
