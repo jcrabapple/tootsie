@@ -67,6 +67,9 @@ public class GlobalUserPreferences{
 	public static boolean showMediaPreview;
 	public static boolean removeTrackingParams;
 
+	// TOOTSIE: AI Personalization master toggle (app-wide, checked by TimelineDefinition.isCompatible)
+	public static boolean aiPersonalizationEnabled;
+
 	// MOSHIDON: we changed this to public, because otherwise we can't export the settings
 	public static SharedPreferences getPrefs(){
 		return MastodonApp.context.getSharedPreferences("global", Context.MODE_PRIVATE);
@@ -134,6 +137,9 @@ public class GlobalUserPreferences{
 		showPostsWithoutAlt=prefs.getBoolean("showPostsWithoutAlt", true);
 		showMediaPreview=prefs.getBoolean("showMediaPreview", true);
 		removeTrackingParams=prefs.getBoolean("removeTrackingParams", true);
+
+		// TOOTSIE: AI Personalization
+		aiPersonalizationEnabled=prefs.getBoolean("aiPersonalizationEnabled", false);
 //		enhanceTextSize=prefs.getBoolean("enhanceTextSize", false);
 
 
@@ -210,6 +216,7 @@ public class GlobalUserPreferences{
 				.putBoolean("showPostsWithoutAlt", showPostsWithoutAlt)
 				.putBoolean("showMediaPreview", showMediaPreview)
 				.putBoolean("removeTrackingParams", removeTrackingParams)
+			.putBoolean("aiPersonalizationEnabled", aiPersonalizationEnabled)
 //				.putBoolean("enhanceTextSize", enhanceTextSize)
 
 				.apply();

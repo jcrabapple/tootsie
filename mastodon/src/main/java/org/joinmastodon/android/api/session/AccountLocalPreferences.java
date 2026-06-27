@@ -12,6 +12,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.joinmastodon.android.GlobalUserPreferences;
 import org.joinmastodon.android.R;
+import org.joinmastodon.android.model.AITopic;
 import org.joinmastodon.android.model.ContentType;
 import org.joinmastodon.android.model.Emoji;
 import org.joinmastodon.android.model.PushSubscription;
@@ -45,11 +46,21 @@ public class AccountLocalPreferences{
 	public ArrayList<Emoji> recentCustomEmoji;
 	public boolean preReplySheet;
 
+	// TOOTSIE: AI Personalization per-account config
+	public String aiApiUrl;           // default: "https://openrouter.ai/api/v1"
+	public String aiApiKey;           // user's OpenRouter API key
+	public String aiModel;            // model ID, e.g. "openai/gpt-4o-mini"
+	public int aiPostCount;           // 5-25, default 10
+	public ArrayList<AITopic> aiTopics;       // inferred + user topics
+	public long aiTopicsLastUpdated;          // timestamp of last inference (0 = never)
+
+
 	// MOSHIDON: this is also ours
 	private final static Type recentLanguagesType=new TypeToken<ArrayList<String>>() {}.getType();
 	private final static Type timelinesType=new TypeToken<ArrayList<TimelineDefinition>>() {}.getType();
 	private final static Type recentCustomEmojiType=new TypeToken<ArrayList<Emoji>>() {}.getType();
 	private final static Type notificationFiltersType = new TypeToken<PushSubscription.Alerts>() {}.getType();
+	private final static Type aiTopicsType=new TypeToken<ArrayList<AITopic>>() {}.getType();
 	public PushSubscription.Alerts notificationFilters;
 
 
@@ -74,7 +85,16 @@ public class AccountLocalPreferences{
 		showEmojiReactions=ShowEmojiReactions.valueOf(prefs.getString("showEmojiReactions", ShowEmojiReactions.HIDE_EMPTY.name()));
 		color=prefs.contains("color") ? ColorPreference.valueOf(prefs.getString("color", null)) : null;
 		recentCustomEmoji=fromJson(prefs.getString("recentCustomEmoji", null), recentCustomEmojiType, new ArrayList<>());
+		preReplySheet=prefs.getBoolean("preReplySheet", false);
 		notificationFilters=fromJson(prefs.getString("notificationFilters", gson.toJson(PushSubscription.Alerts.ofAll())), notificationFiltersType, PushSubscription.Alerts.ofAll());
+
+		// TOOTSIE: AI Personalization
+		aiApiUrl=prefs.getString("aiApiUrl", "https://openrouter.ai/api/v1");
+		aiApiKey=prefs.getString("aiApiKey", null);
+		aiModel=prefs.getString("aiModel", "openai/gpt-4o-mini");
+		aiPostCount=prefs.getInt("aiPostCount", 10);
+		aiTopics=fromJson(prefs.getString("aiTopics", null), aiTopicsType, new ArrayList<>());
+		aiTopicsLastUpdated=prefs.getLong("aiTopicsLastUpdated", 0);
 
 	}
 
@@ -108,6 +128,14 @@ public class AccountLocalPreferences{
 				.putString("color", color!=null ? color.name() : null)
 				.putString("recentCustomEmoji", gson.toJson(recentCustomEmoji))
 				.putString("notificationFilters", gson.toJson(notificationFilters))
+
+				// TOOTSIE: AI Personalization
+				.putString("aiApiUrl", aiApiUrl)
+				.putString("aiApiKey", aiApiKey)
+				.putString("aiModel", aiModel)
+				.putInt("aiPostCount", aiPostCount)
+				.putString("aiTopics", gson.toJson(aiTopics))
+				.putLong("aiTopicsLastUpdated", aiTopicsLastUpdated)
 
 				.apply();
 	}

@@ -22,6 +22,8 @@ import org.joinmastodon.android.fragments.NotificationsListFragment;
 import org.joinmastodon.android.fragments.discover.BubbleTimelineFragment;
 import org.joinmastodon.android.fragments.discover.FederatedTimelineFragment;
 import org.joinmastodon.android.fragments.discover.LocalTimelineFragment;
+import org.joinmastodon.android.fragments.discover.PersonalTimelineFragment;
+import org.joinmastodon.android.GlobalUserPreferences;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,6 +152,7 @@ public class TimelineDefinition {
 			case BUBBLE -> ctx.getString(R.string.sk_timeline_bubble);
 			case BOOKMARKS -> ctx.getString(R.string.bookmarks);
 			case FAVORITES -> ctx.getString(R.string.your_favorites);
+			case PERSONAL -> ctx.getString(R.string.mo_personal_timeline);
 			case CUSTOM_LOCAL_TIMELINE -> domain;
 		};
 	}
@@ -166,6 +169,7 @@ public class TimelineDefinition {
 			case BUBBLE -> Icon.BUBBLE;
 			case BOOKMARKS -> Icon.BOOKMARKS;
 			case FAVORITES -> Icon.FAVORITES;
+			case PERSONAL -> Icon.SPARKLES;
 		};
 	}
 
@@ -181,6 +185,7 @@ public class TimelineDefinition {
 			case CUSTOM_LOCAL_TIMELINE -> new CustomLocalTimelineFragment();
 			case BOOKMARKS -> new BookmarkedStatusListFragment();
 			case FAVORITES -> new FavoritedStatusListFragment();
+			case PERSONAL -> new PersonalTimelineFragment();
 		};
 	}
 
@@ -263,7 +268,10 @@ public class TimelineDefinition {
 
 		// not really timelines, but some people want it, so,,
 		BOOKMARKS,
-		FAVORITES
+		FAVORITES,
+
+		// TOOTSIE: AI Personalization timeline
+		PERSONAL
 	}
 
 	public enum Icon {
@@ -348,7 +356,10 @@ public class TimelineDefinition {
 		CUSTOM_LOCAL_TIMELINE(R.drawable.ic_fluent_people_community_24_regular, R.string.sk_timeline_local, true),
 		BUBBLE(R.drawable.ic_fluent_circle_24_regular, R.string.sk_timeline_bubble, true),
 		BOOKMARKS(R.drawable.ic_fluent_bookmark_multiple_24_regular, R.string.bookmarks, true),
-		FAVORITES(R.drawable.ic_fluent_star_24_regular, R.string.your_favorites, true);
+		FAVORITES(R.drawable.ic_fluent_star_24_regular, R.string.your_favorites, true),
+
+		// TOOTSIE: AI Personalization icon
+		SPARKLES(R.drawable.ic_fluent_sparkle_24_regular, R.string.mo_personal_timeline, true);
 
 		public final int iconRes, nameRes;
 		public final boolean hidden;
@@ -370,6 +381,15 @@ public class TimelineDefinition {
 	public static final TimelineDefinition POSTS_TIMELINE = new TimelineDefinition(TimelineType.POST_NOTIFICATIONS);
 	public static final TimelineDefinition BOOKMARKS_TIMELINE = new TimelineDefinition(TimelineType.BOOKMARKS);
 	public static final TimelineDefinition FAVORITES_TIMELINE = new TimelineDefinition(TimelineType.FAVORITES);
+
+	// TOOTSIE: AI Personalization timeline — only available when the feature is enabled
+	public static final TimelineDefinition PERSONAL_TIMELINE = new TimelineDefinition(TimelineType.PERSONAL) {
+		@Override
+		public boolean isCompatible(AccountSession session) {
+			return GlobalUserPreferences.aiPersonalizationEnabled;
+		}
+	};
+
 	public static final TimelineDefinition BUBBLE_TIMELINE = new TimelineDefinition(TimelineType.BUBBLE) {
 		@Override
 		public boolean isCompatible(AccountSession session) {
@@ -416,6 +436,7 @@ public class TimelineDefinition {
 			POSTS_TIMELINE,
 			BUBBLE_TIMELINE,
 			BOOKMARKS_TIMELINE,
-			FAVORITES_TIMELINE
+			FAVORITES_TIMELINE,
+			PERSONAL_TIMELINE
 	);
 }

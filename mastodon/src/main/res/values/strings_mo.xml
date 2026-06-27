@@ -142,4 +142,37 @@
 	<string name="mo_error_display_copy_error_details">Copy details</string>
 	<string name="mo_trending_link_read">Read</string>
 	<string name="mo_icon_gnome" translatable="false">GNOME</string>
+
+	<!-- TOOTSIE: AI Personalization -->
+	<string name="mo_personal_timeline">Personal</string>
+	<string name="mo_settings_ai_personalization">AI Personalization</string>
+	<string name="mo_settings_ai_personalization_subtitle">Show a personalized timeline using AI</string>
+	<string name="mo_settings_ai_enable">Enable AI Personalization</string>
+	<string name="mo_settings_ai_posts_to_display">Posts to display</string>
+	<string name="mo_settings_ai_provider">LLM Provider</string>
+	<string name="mo_settings_ai_api_url">API URL</string>
+	<string name="mo_settings_ai_api_key">API Key</string>
+	<string name="mo_settings_ai_model">Model</string>
+	<string name="mo_settings_ai_select_model">Select Model</string>
+	<string name="mo_settings_ai_enter_model_manually">Enter model ID manually</string>
+	<string name="mo_settings_ai_model_id">Model ID</string>
+	<string name="mo_settings_ai_inferred_topics">Inferred Topics</string>
+	<string name="mo_settings_ai_no_topics">No topics inferred yet. Favorite and boost posts to help the AI learn your interests.</string>
+	<string name="mo_settings_ai_add_topic">Add custom topic</string>
+	<string name="mo_settings_ai_reinfer_topics">Re-infer topics</string>
+	<string name="mo_settings_ai_last_updated">Last updated: %1$s</string>
+	<string name="mo_settings_ai_never_inferred">Topics have not been inferred yet</string>
+	<string name="mo_settings_ai_privacy_notice">Your favorites, boosts, and federated timeline posts are sent to your configured LLM provider for processing. Your API key is stored locally and never shared.</string>
+	<string name="mo_settings_ai_privacy">Privacy</string>
+	<string name="mo_settings_ai_inferring">Inferring topics…</string>
+	<string name="mo_settings_ai_inferring_error">Failed to infer topics: %1$s</string>
+	<string name="mo_settings_ai_loading_models">Loading models…</string>
+	<string name="mo_settings_ai_loading_models_error">Failed to load models: %1$s</string>
+	<string name="mo_settings_ai_not_configured">AI Personalization is not configured. Open Settings to configure it.</string>
+	<string name="mo_settings_ai_no_api_key">Please enter an API key in AI Personalization settings.</string>
+	<string name="mo_settings_ai_ranking_error">Failed to rank posts: %1$s</string>
+	<string name="mo_personal_no_topics">No topics inferred yet. Favorite and boost posts to help the AI learn your interests, then pull to refresh.</string>
+	<string name="mo_personal_not_configured">AI Personalization is not configured. Open Settings to set it up.</string>
+	<string name="mo_personal_loading">Finding posts you\'ll like…</string>
+	<string name="mo_personal_error">Something went wrong. Showing unranked posts.</string>
 </resources>

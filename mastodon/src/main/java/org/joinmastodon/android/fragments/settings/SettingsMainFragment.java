@@ -71,7 +71,8 @@ public class SettingsMainFragment extends BaseSettingsFragment<Object>{
 
 				new SectionHeaderListItem(R.string.settings_app_settings),
 				new ListItem<>(R.string.settings_behavior, 0, R.drawable.ic_tune_24px, this::onBehaviorClick),
-				new ListItem<>(R.string.settings_display, 0, R.drawable.ic_style_24px, this::onDisplayClick)
+				new ListItem<>(R.string.settings_display, 0, R.drawable.ic_style_24px, this::onDisplayClick),
+				new ListItem<>(R.string.mo_settings_ai_personalization, R.string.mo_settings_ai_personalization_subtitle, R.drawable.ic_fluent_sparkle_24_regular, this::onAIPersonalizationClick)
 
 		));
 		if(AccountSessionManager.get(accountID).isEligibleForDonations()){
@@ -152,6 +153,10 @@ public class SettingsMainFragment extends BaseSettingsFragment<Object>{
 
 	private void onDisplayClick(ListItem<?> item_){
 		Nav.go(getActivity(), SettingsDisplayFragment.class, makeFragmentArgs());
+	}
+
+	private void onAIPersonalizationClick(ListItem<?> item_){
+		Nav.go(getActivity(), SettingsAIPersonalizationFragment.class, makeFragmentArgs());
 	}
 
 	private void onAboutClick(ListItem<?> item_){
