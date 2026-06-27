@@ -73,6 +73,17 @@ public class SettingsAIPersonalizationFragment extends BaseSettingsFragment<Void
 				this::toggleCheckableItem);
 		items.add(enableItem);
 
+		// How it works explainer
+		items.add(new SectionHeaderListItem(R.string.mo_settings_ai_how_it_works));
+		ListItem<Void> howItWorksItem = new ListItem<>(
+				getString(R.string.mo_settings_ai_how_it_works_body),
+				null,
+				R.drawable.ic_info_24px,
+				null);
+		howItWorksItem.isEnabled = false;
+		howItWorksItem.dividerAfter = true;
+		items.add(howItWorksItem);
+
 		// Posts to display
 		String postCountStr = prefs.aiPostCount + "";
 		postCountItem = new ListItem<>(

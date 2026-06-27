@@ -162,6 +162,8 @@
 	<string name="mo_settings_ai_timeline_source_federated">Federated (global)</string>
 	<string name="mo_settings_ai_timeline_source_local">Local (your instance)</string>
 	<string name="mo_personal_not_interested">Not interested</string>
+	<string name="mo_settings_ai_how_it_works">How it works</string>
+	<string name="mo_settings_ai_how_it_works_body">Tootsie builds a personalized feed from the wider Mastodon universe. Here\'s how:\n\n1. When you favorite or boost posts, Tootsie learns your interests using AI embeddings — compact vectors that capture the meaning of text.\n\n2. Your Personal timeline fetches posts from the global federated timeline and ranks them by how well they match your interests, how recent they are, and how engaged the community is.\n\n3. As you use the feed — favoriting, boosting, or tapping \"Not interested\" — Tootsie learns what you like and don\'t like, improving future results.\n\nTo get started: add your OpenRouter API key below, then favorite and boost some posts. The AI will infer your topics and start building your feed.\n\nYour post content is sent to your configured API provider (default: OpenRouter) for embedding. No data is stored by Tootsie beyond your device.</string>
 	<string name="mo_settings_ai_inferred_topics">Inferred Topics</string>
 	<string name="mo_settings_ai_no_topics">No topics inferred yet. Favorite and boost posts to help the AI learn your interests.</string>
 	<string name="mo_settings_ai_add_topic">Add custom topic</string>
