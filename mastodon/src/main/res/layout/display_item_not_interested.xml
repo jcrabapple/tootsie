@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:clipToPadding="false"
+	android:paddingLeft="56dp"
+	android:paddingRight="16dp"
+	android:paddingTop="2dp"
+	android:paddingBottom="4dp"
+	android:gravity="end">
+
+	<TextView
+		android:id="@+id/not_interested_button"
+		android:layout_width="wrap_content"
+		android:layout_height="24dp"
+		android:gravity="center_vertical"
+		android:textAppearance="@style/m3_label_small"
+		android:textColor="?colorM3OnSurfaceVariant"
+		android:text="@string/mo_personal_not_interested"
+		android:paddingLeft="8dp"
+		android:paddingRight="8dp"
+		android:background="?android:selectableItemBackgroundBorderless"
+		android:clickable="true"
+		android:focusable="true"/>
+
+</LinearLayout>

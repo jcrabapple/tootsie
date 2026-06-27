@@ -22,6 +22,7 @@ import org.joinmastodon.android.fragments.StatusListFragment;
 import org.joinmastodon.android.model.AITopic;
 import org.joinmastodon.android.model.FilterContext;
 import org.joinmastodon.android.model.Status;
+import org.joinmastodon.android.ui.displayitems.NotInterestedStatusDisplayItem;
 import org.joinmastodon.android.ui.displayitems.StatusDisplayItem;
 import org.joinmastodon.android.ui.displayitems.TopicTagStatusDisplayItem;
 import org.joinmastodon.android.utils.ProvidesAssistContent;
@@ -68,7 +69,21 @@ public class PersonalTimelineFragment extends StatusListFragment
 			items.add(new TopicTagStatusDisplayItem(content.id, null, getContext(), topics));
 		}
 		items.addAll(super.buildDisplayItems(s));
+
+		// "Not interested" button — dismisses the post and records feedback
+		items.add(new NotInterestedStatusDisplayItem(content.id, null, getContext(),
+				content.id, accountID, () -> dismissPost(s)));
+
 		return items;
+	}
+
+	private void dismissPost(Status s) {
+		data.remove(s);
+		displayItems.clear();
+		for (Status status : data) {
+			displayItems.addAll(buildDisplayItems(status));
+		}
+		adapter.notifyDataSetChanged();
 	}
 
 	@Override

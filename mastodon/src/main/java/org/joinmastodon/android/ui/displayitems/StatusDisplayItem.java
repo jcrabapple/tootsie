@@ -122,6 +122,8 @@ public abstract class StatusDisplayItem{
 			case COLLECTION_NOTIFICATION -> new CollectionNotificationStatusDisplayItem.Holder(activity, parent);
 			// TOOTSIE: AI Personalization — topic tag chip
 			case TOPIC_TAG -> new TopicTagStatusDisplayItem.Holder(activity, parent);
+			// TOOTSIE: AI Personalization — "Not interested" button
+			case NOT_INTERESTED -> new NotInterestedStatusDisplayItem.Holder(activity, parent);
 		};
 	}
 
@@ -321,7 +323,9 @@ public abstract class StatusDisplayItem{
 		// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — collection notification row
 		COLLECTION_NOTIFICATION,
 		// TOOTSIE: AI Personalization — topic tag chip
-		TOPIC_TAG
+		TOPIC_TAG,
+		// TOOTSIE: AI Personalization — "Not interested" button
+		NOT_INTERESTED
 	}
 
 	public static abstract class Holder<T> extends BindableViewHolder<T> implements UsableRecyclerView.DisableableClickable{
