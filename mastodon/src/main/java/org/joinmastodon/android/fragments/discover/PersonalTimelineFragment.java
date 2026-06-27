@@ -239,7 +239,7 @@ public class PersonalTimelineFragment extends StatusListFragment
 					List<String> matchedTopics = new ArrayList<>();
 					for (int t = 0; t < topicVectors.size(); t++) {
 						float sim = EmbeddingClient.cosineSimilarity(cVec, topicVectors.get(t));
-						if (sim > 0.35f) {
+						if (sim > 0.20f) {
 							matchedTopics.add(topicLabels.get(t));
 						}
 					}
