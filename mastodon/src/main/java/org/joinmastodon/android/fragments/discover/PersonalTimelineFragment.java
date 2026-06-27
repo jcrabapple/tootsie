@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import org.joinmastodon.android.GlobalUserPreferences;
 import org.joinmastodon.android.R;
+import org.joinmastodon.android.ai.AIPersonalizationManager;
 import org.joinmastodon.android.api.requests.search.GetSearchResults;
 import org.joinmastodon.android.api.session.AccountLocalPreferences;
 import org.joinmastodon.android.api.session.AccountSessionManager;
@@ -148,11 +149,25 @@ public class PersonalTimelineFragment extends StatusListFragment
 			AccountSessionManager.get(accountID).filterStatuses(result, getFilterContext());
 		}
 
-		// Advance offset for next page
-		searchOffset += POSTS_PER_TOPIC;
+		if (result.isEmpty()) {
+			boolean hasMore = false;
+			onDataLoaded(result, hasMore);
+			return;
+		}
 
-		boolean hasMore = !result.isEmpty();
-		onDataLoaded(result, hasMore);
+		// Send through LLM to remove false positives (e.g. "space" in "creates space" matched "Space Exploration")
+		AIPersonalizationManager.filterPosts(accountID, result, topicMap,
+				filtered -> {
+					if (getActivity() == null) return;
+					searchOffset += POSTS_PER_TOPIC;
+					onDataLoaded(filtered, !filtered.isEmpty());
+				},
+				error -> {
+					// On LLM failure, fall back to unfiltered search results
+					if (getActivity() == null) return;
+					searchOffset += POSTS_PER_TOPIC;
+					onDataLoaded(result, !result.isEmpty());
+				});
 	}
 
 	@Override

@@ -23,7 +23,9 @@ import org.joinmastodon.android.model.Status;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -92,6 +94,25 @@ public class AIPersonalizationManager {
 			"Return your response as JSON in this exact format:\n" +
 			"{\n  \"topics\": [\"topic1\", \"topic2\", \"topic3\", ...]\n}\n\n" +
 			"Aim for 5-15 topics. Order by estimated relevance (most prominent first).";
+
+	// Post filtering prompt (sent search results + topics, returns only genuinely relevant post IDs)
+	private static final String POST_FILTER_PROMPT =
+			"\n\nYour task is to filter search results from a Mastodon timeline.\n\n" +
+			"You will receive a JSON object containing:\n" +
+			"- \"topics\": the user's topics of interest\n" +
+			"- \"posts\": posts found by searching for those topics, each with an \"id\", \"author\", \"content\", \"language\", and \"matched_topic\"\n\n" +
+			"The posts were found by keyword search, so some are false positives. " +
+			"A post matched on the topic \"Space Exploration\" because it contains the word \"space\" " +
+			"is NOT genuinely about space exploration — it might be about \"creating space\" in your life.\n\n" +
+			"For each post, evaluate whether the matched_topic is a CENTRAL SUBJECT of the post, " +
+			"not just a word that happens to appear. Remove posts where:\n" +
+			"- The topic keyword is used in a different context (e.g., \"space\" meaning personal space, not outer space)\n" +
+			"- The post is spam, ads, or low-quality content\n" +
+			"- The post is not actually about the matched topic\n\n" +
+			"Keep posts where the topic is clearly a main subject of discussion.\n\n" +
+			"Return your response as JSON in this exact format:\n" +
+			"{\n  \"relevant_ids\": [\"id_of_post_1\", \"id_of_post_2\", ...]\n}\n\n" +
+			"Only include IDs of posts that genuinely match their topic. Order by relevance (most relevant first).";
 
 
 	// ========== Topic Inference ==========
@@ -242,6 +263,106 @@ public class AIPersonalizationManager {
 			topics.add(new AITopic(el.getAsString(), false));
 		}
 		return topics;
+	}
+
+
+	// ========== Post Filtering ==========
+
+	/**
+	 * Filter search results through the LLM to remove false positives.
+	 * Each post is tagged with its matched topic so the LLM can verify relevance.
+	 * Callbacks run on the UI thread.
+	 */
+	public static void filterPosts(String accountID, List<Status> posts, Map<String, List<String>> topicMap,
+									Consumer<List<Status>> onSuccess, Consumer<String> onError) {
+		AccountSession session = AccountSessionManager.getInstance().getAccount(accountID);
+		if (session == null) {
+			uiHandler.post(() -> onError.accept("No active session"));
+			return;
+		}
+
+		AccountLocalPreferences prefs = session.getLocalPreferences();
+		String apiKey = prefs.aiApiKey;
+		String apiUrl = prefs.aiApiUrl;
+		String model = prefs.aiModel;
+
+		if (apiKey == null || apiKey.isBlank()) {
+			// No API key — skip filtering, return posts as-is
+			uiHandler.post(() -> onSuccess.accept(posts));
+			return;
+		}
+
+		// Build posts array with matched_topic annotation
+		JsonArray postsArray = new JsonArray();
+		for (Status s : posts) {
+			Status actual = s.reblog != null ? s.reblog : s;
+			List<String> topics = topicMap.get(actual.id);
+			String matchedTopic = (topics != null && !topics.isEmpty()) ? topics.get(0) : "";
+
+			JsonObject postObj = new JsonObject();
+			postObj.addProperty("id", actual.id);
+			postObj.addProperty("author", actual.account != null ? actual.account.getDisplayName() : "");
+			postObj.addProperty("username", actual.account != null ? actual.account.acct : "");
+			postObj.addProperty("content", stripHtml(actual.content));
+			postObj.addProperty("language", actual.language != null ? actual.language : "");
+			postObj.addProperty("matched_topic", matchedTopic);
+			postsArray.add(postObj);
+		}
+
+		// Build topics list
+		Set<String> allTopics = new HashSet<>();
+		for (List<String> tl : topicMap.values()) allTopics.addAll(tl);
+		JsonArray topicsArray = new JsonArray();
+		for (String t : allTopics) topicsArray.add(t);
+
+		JsonObject payload = new JsonObject();
+		payload.add("topics", topicsArray);
+		payload.add("posts", postsArray);
+
+		String userContent = gson.toJson(payload);
+		String systemPrompt = SYSTEM_PROMPT + POST_FILTER_PROMPT;
+		JsonObject requestBody = buildChatCompletionRequest(model, systemPrompt, userContent);
+
+		// Build ID→Status map for lookup after filtering
+		Map<String, Status> statusById = new LinkedHashMap<>();
+		for (Status s : posts) {
+			Status actual = s.reblog != null ? s.reblog : s;
+			statusById.put(actual.id, s);
+		}
+
+		MastodonAPIController.runInBackground(() -> {
+			try {
+				String response = executeLLMRequest(apiUrl, apiKey, requestBody);
+				List<String> relevantIds = parseFilteredIdsResponse(response);
+
+				// Map back to Status objects in LLM's relevance order
+				List<Status> result = new ArrayList<>();
+				for (String id : relevantIds) {
+					Status s = statusById.get(id);
+					if (s != null) result.add(s);
+				}
+
+				List<Status> finalResult = result;
+				uiHandler.post(() -> onSuccess.accept(finalResult));
+			} catch (Exception e) {
+				Log.e(TAG, "Post filtering failed", e);
+				// On failure, fall back to unfiltered results
+				uiHandler.post(() -> onSuccess.accept(posts));
+			}
+		});
+	}
+
+	private static List<String> parseFilteredIdsResponse(String response) {
+		JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+		String content = extractContentFromResponse(json);
+		JsonObject contentJson = JsonParser.parseString(content).getAsJsonObject();
+		JsonArray idsArray = contentJson.getAsJsonArray("relevant_ids");
+
+		List<String> ids = new ArrayList<>();
+		for (JsonElement el : idsArray) {
+			ids.add(el.getAsString());
+		}
+		return ids;
 	}
 
 
