@@ -26,7 +26,7 @@ import java.util.Map;
 public class EmbeddingDatabase extends SQLiteOpenHelper {
 
 	private static final String DB_NAME = "tootsie_embeddings.db";
-	private static final int DB_VERSION = 1;
+	private static final int DB_VERSION = 2;
 	private static final String TABLE = "ai_embeddings";
 
 	private static EmbeddingDatabase instance;
@@ -53,11 +53,28 @@ public class EmbeddingDatabase extends SQLiteOpenHelper {
 				+ "PRIMARY KEY (account_id, status_id)"
 				+ ")");
 		db.execSQL("CREATE INDEX idx_embeddings_account ON " + TABLE + "(account_id)");
+
+		// Feedback table for implicit signals
+		db.execSQL("CREATE TABLE ai_feedback ("
+				+ "account_id TEXT NOT NULL, "
+				+ "status_id TEXT NOT NULL, "
+				+ "action TEXT NOT NULL, "
+				+ "timestamp INTEGER NOT NULL, "
+				+ "PRIMARY KEY (account_id, status_id, action)"
+				+ ")");
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// Future migrations go here
+		if (oldVersion < 2) {
+			db.execSQL("CREATE TABLE IF NOT EXISTS ai_feedback ("
+					+ "account_id TEXT NOT NULL, "
+					+ "status_id TEXT NOT NULL, "
+					+ "action TEXT NOT NULL, "
+					+ "timestamp INTEGER NOT NULL, "
+					+ "PRIMARY KEY (account_id, status_id, action)"
+					+ ")");
+		}
 	}
 
 	/** Store a single embedding vector. */

@@ -41,6 +41,7 @@ public class SettingsAIPersonalizationFragment extends BaseSettingsFragment<Void
 	private ListItem<Void> apiKeyItem;
 	private ListItem<Void> modelItem;
 	private ListItem<Void> embeddingModelItem;
+	private ListItem<Void> timelineSourceItem;
 	private ListItem<Void> reinferItem;
 	private ListItem<Void> addTopicItem;
 	private ListItem<Void> lastUpdatedItem;
@@ -126,6 +127,17 @@ public class SettingsAIPersonalizationFragment extends BaseSettingsFragment<Void
 				R.drawable.ic_fluent_bot_24_regular,
 				this::onEmbeddingModelClick);
 		items.add(embeddingModelItem);
+
+		// Timeline Source
+		String sourceDisplay = "local".equals(prefs.aiTimelineSource)
+				? getString(R.string.mo_settings_ai_timeline_source_local)
+				: getString(R.string.mo_settings_ai_timeline_source_federated);
+		timelineSourceItem = new ListItem<>(
+				getString(R.string.mo_settings_ai_timeline_source),
+				sourceDisplay,
+				R.drawable.ic_fluent_earth_24_regular,
+				this::onTimelineSourceClick);
+		items.add(timelineSourceItem);
 
 		// Section: Inferred Topics
 		items.add(new SectionHeaderListItem(R.string.mo_settings_ai_inferred_topics));
@@ -296,6 +308,27 @@ public class SettingsAIPersonalizationFragment extends BaseSettingsFragment<Void
 						embeddingModelItem.subtitle = value;
 						rebindItem(embeddingModelItem);
 					}
+				})
+				.setNegativeButton(R.string.cancel, null)
+				.show();
+	}
+
+	private void onTimelineSourceClick(ListItem<?> item) {
+		String[] sources = {
+				getString(R.string.mo_settings_ai_timeline_source_federated),
+				getString(R.string.mo_settings_ai_timeline_source_local)
+		};
+		String[] values = {"federated", "local"};
+		int selected = "local".equals(prefs.aiTimelineSource) ? 1 : 0;
+
+		new M3AlertDialogBuilder(getActivity())
+				.setTitle(R.string.mo_settings_ai_timeline_source)
+				.setSingleChoiceItems(sources, selected, (dlg, which) -> {
+					prefs.aiTimelineSource = values[which];
+					prefs.save();
+					timelineSourceItem.subtitle = sources[which];
+					rebindItem(timelineSourceItem);
+					dlg.dismiss();
 				})
 				.setNegativeButton(R.string.cancel, null)
 				.show();

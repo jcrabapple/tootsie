@@ -2,52 +2,57 @@ package org.joinmastodon.android.fragments.discover;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Toast;
 
 import org.joinmastodon.android.GlobalUserPreferences;
+import org.joinmastodon.android.MastodonApp;
 import org.joinmastodon.android.R;
 import org.joinmastodon.android.ai.AIPersonalizationManager;
-import org.joinmastodon.android.api.requests.search.GetSearchResults;
+import org.joinmastodon.android.ai.EmbeddingClient;
+import org.joinmastodon.android.ai.EmbeddingDatabase;
+import org.joinmastodon.android.ai.FeedbackTracker;
+import org.joinmastodon.android.ai.ForYouScorer;
+import org.joinmastodon.android.api.MastodonAPIController;
+import org.joinmastodon.android.api.requests.timelines.GetPublicTimeline;
 import org.joinmastodon.android.api.session.AccountLocalPreferences;
 import org.joinmastodon.android.api.session.AccountSessionManager;
 import org.joinmastodon.android.fragments.StatusListFragment;
 import org.joinmastodon.android.model.AITopic;
 import org.joinmastodon.android.model.FilterContext;
-import org.joinmastodon.android.model.SearchResults;
 import org.joinmastodon.android.model.Status;
 import org.joinmastodon.android.ui.displayitems.StatusDisplayItem;
 import org.joinmastodon.android.ui.displayitems.TopicTagStatusDisplayItem;
 import org.joinmastodon.android.utils.ProvidesAssistContent;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import me.grishka.appkit.api.Callback;
 import me.grishka.appkit.api.ErrorResponse;
 
 /**
- * Personal timeline: searches Mastodon globally for posts matching the user's
- * enabled AI topics, merges and dedupes results across topics.
+ * Personal timeline: fetches from the federated timeline and ranks posts using
+ * the For You scoring pipeline (embedding similarity + recency + engagement + diversity).
  *
- * Results are shown immediately after search (sorted by date), then optionally
- * refined through LLM filtering in the background to remove false positives.
+ * Candidates come from the wider Mastodon universe, not keyword search.
+ * Results are shown immediately (by recency), then re-ranked by the multi-signal
+ * scorer in the background.
  */
 public class PersonalTimelineFragment extends StatusListFragment
 		implements ProvidesAssistContent.ProvidesWebUri {
 
-	private int searchOffset = 0;
-	private static final int POSTS_PER_TOPIC = 10;
+	private static final int CANDIDATE_FETCH_LIMIT = 40;
 
-	/** Maps status ID → list of topic labels that matched this post. */
-	private final Map<String, List<String>> topicMap = new ConcurrentHashMap<>();
+	/** Maps status ID → list of topic labels for display. */
+	private Map<String, List<String>> topicMap = new java.util.concurrent.ConcurrentHashMap<>();
+	private List<String> enabledTopics = new ArrayList<>();
+	private String lastMaxId = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -81,7 +86,7 @@ public class PersonalTimelineFragment extends StatusListFragment
 			return;
 		}
 
-		List<String> enabledTopics = new ArrayList<>();
+		enabledTopics = new ArrayList<>();
 		for (AITopic t : prefs.aiTopics) {
 			if (t.enabled && t.label != null && !t.label.isBlank()) {
 				enabledTopics.add(t.label);
@@ -94,99 +99,133 @@ public class PersonalTimelineFragment extends StatusListFragment
 			return;
 		}
 
-		// Search Mastodon for each topic in parallel
-		AtomicInteger remaining = new AtomicInteger(enabledTopics.size());
-		Set<String> seenIds = Collections.synchronizedSet(new HashSet<>());
-		List<Status> merged = Collections.synchronizedList(new ArrayList<>());
-		AtomicInteger errorCount = new AtomicInteger(0);
+		// Fetch candidates from federated (or local) timeline
+		boolean localOnly = "local".equals(prefs.aiTimelineSource);
+		String maxId = (offset > 0 && lastMaxId != null) ? lastMaxId : null;
 
-		for (String topic : enabledTopics) {
-			new GetSearchResults(topic, GetSearchResults.Type.STATUSES, false, null, searchOffset, POSTS_PER_TOPIC)
-					.limit(POSTS_PER_TOPIC)
-					.setCallback(new Callback<>() {
-						@Override
-						public void onSuccess(SearchResults result) {
-							if (getActivity() == null) return;
-							if (result.statuses != null) {
-								for (Status s : result.statuses) {
-									Status content = s.reblog != null ? s.reblog : s;
-									if (seenIds.add(content.id)) {
-										merged.add(s);
-									}
-									// Track which topic(s) matched this post
-									topicMap.computeIfAbsent(content.id, k -> new ArrayList<>()).add(topic);
-								}
-							}
-							if (remaining.decrementAndGet() == 0) {
-								onAllTopicsComplete(merged);
-							}
+		new GetPublicTimeline(localOnly, !localOnly && false, maxId, null, CANDIDATE_FETCH_LIMIT, null, null)
+				.setCallback(new Callback<>() {
+					@Override
+					public void onSuccess(List<Status> result) {
+						if (getActivity() == null) return;
+
+						// Apply account-level filters
+						if (!result.isEmpty()) {
+							AccountSessionManager.get(accountID).filterStatuses(result, getFilterContext());
 						}
 
-						@Override
-						public void onError(ErrorResponse error) {
-							if (getActivity() == null) return;
-							errorCount.incrementAndGet();
-							if (remaining.decrementAndGet() == 0) {
-								if (errorCount.get() == enabledTopics.size()) {
-									Toast.makeText(getActivity(),
-											getString(R.string.mo_personal_error),
-											Toast.LENGTH_SHORT).show();
-									onDataLoaded(new ArrayList<>(), false);
-								} else {
-									onAllTopicsComplete(merged);
-								}
-							}
+						if (result.isEmpty()) {
+							onDataLoaded(result, false);
+							return;
 						}
-					})
-					.exec(accountID);
-		}
+
+						// Track max_id for pagination
+						lastMaxId = result.get(result.size() - 1).id;
+
+						// Tag each candidate with all enabled topics for display
+						topicMap.clear();
+						for (Status s : result) {
+							Status actual = s.reblog != null ? s.reblog : s;
+							topicMap.put(actual.id, new ArrayList<>(enabledTopics));
+						}
+
+						// Sort by date for immediate display
+						result.sort(Comparator.comparing((Status s) -> s.createdAt).reversed());
+
+						// Show unranked results immediately
+						onDataLoaded(result, true);
+
+						// Re-rank with For You scoring in background
+						if (prefs.aiApiKey != null && !prefs.aiApiKey.isBlank()) {
+							rankWithForYouScoring(result);
+						}
+					}
+
+					@Override
+					public void onError(ErrorResponse error) {
+						if (getActivity() == null) return;
+						Toast.makeText(getActivity(),
+								getString(R.string.mo_personal_error),
+								Toast.LENGTH_SHORT).show();
+						onDataLoaded(new ArrayList<>(), false);
+					}
+				}).exec(accountID);
 	}
 
-	private void onAllTopicsComplete(List<Status> merged) {
-		if (getActivity() == null) return;
-
-		List<Status> result = new ArrayList<>(new LinkedHashSet<>(merged));
-
-		// Filter statuses through account-level filters
-		if (!result.isEmpty()) {
-			AccountSessionManager.get(accountID).filterStatuses(result, getFilterContext());
-		}
-
-		// Sort by date descending (newest first)
-		result.sort(Comparator.comparing((Status s) -> s.createdAt).reversed());
-
-		searchOffset += POSTS_PER_TOPIC;
-
-		if (result.isEmpty()) {
-			onDataLoaded(result, false);
-			return;
-		}
-
-		// Show results immediately — user sees posts right away
-		onDataLoaded(result, true);
-
-		// If API key is configured, rank by embedding similarity in background
+	/**
+	 * Rank candidates using the For You scoring pipeline:
+	 * 1. Embed candidates via API
+	 * 2. Compute cosine similarity against cached interest vectors
+	 * 3. Score with ForYouScorer (similarity + recency + engagement + diversity)
+	 * 4. Update displayed results
+	 */
+	private void rankWithForYouScoring(List<Status> candidates) {
 		AccountLocalPreferences prefs = getLocalPrefs();
-		if (prefs.aiApiKey != null && !prefs.aiApiKey.isBlank()) {
-			AIPersonalizationManager.rankCandidates(accountID, result,
-					this::applyRankedResults,
-					error -> {
-						// Ranking failed — keep unranked results
-					});
-		}
-	}
+		String apiUrl = prefs.aiApiUrl;
+		String apiKey = prefs.aiApiKey;
+		String model = prefs.aiEmbeddingModel;
 
-	private void applyRankedResults(List<AIPersonalizationManager.RankedPost> ranked) {
-		if (getActivity() == null || ranked.isEmpty()) return;
-
-		// Replace displayed data with ranked results (sorted by similarity)
-		data.clear();
-		displayItems.clear();
-		for (AIPersonalizationManager.RankedPost rp : ranked) {
-			data.add(rp.status);
-			displayItems.addAll(buildDisplayItems(rp.status));
+		// Build text for embedding
+		List<String> texts = new ArrayList<>();
+		for (Status s : candidates) {
+			Status actual = s.reblog != null ? s.reblog : s;
+			texts.add(AIPersonalizationManager.stripHtml(actual.content));
 		}
-		adapter.notifyDataSetChanged();
+
+		// Load cached interest vectors
+		EmbeddingDatabase db = EmbeddingDatabase.getInstance(MastodonApp.context);
+		Map<String, float[]> interestVectors = db.getEmbeddings(accountID);
+
+		if (interestVectors.isEmpty()) {
+			return; // No embeddings yet, keep unranked
+		}
+
+		// Load dismissed IDs for feedback
+		Set<String> dismissedIds = FeedbackTracker.getDismissedIds(accountID);
+
+		MastodonAPIController.runInBackground(() -> {
+			try {
+				// Embed all candidates in one batch call
+				List<float[]> candidateVectors = EmbeddingClient.embedBatch(apiUrl, apiKey, model, texts);
+
+				// Compute max similarity per candidate against interest vectors
+				List<Float> similarities = new ArrayList<>();
+				for (float[] cVec : candidateVectors) {
+					float maxSim = 0f;
+					if (cVec != null) {
+						for (float[] iVec : interestVectors.values()) {
+							float sim = EmbeddingClient.cosineSimilarity(cVec, iVec);
+							if (sim > maxSim) maxSim = sim;
+						}
+					}
+					similarities.add(maxSim);
+				}
+
+				// Score with ForYouScorer
+				List<ForYouScorer.ScoredPost> ranked = ForYouScorer.score(
+						candidates, similarities, topicMap, dismissedIds);
+
+				// Extract sorted statuses
+				List<Status> sorted = new ArrayList<>();
+				for (ForYouScorer.ScoredPost sp : ranked) {
+					sorted.add(sp.status);
+				}
+
+				// Update UI on main thread
+				new Handler(Looper.getMainLooper()).post(() -> {
+					if (getActivity() == null) return;
+					data.clear();
+					displayItems.clear();
+					for (Status s : sorted) {
+						data.add(s);
+						displayItems.addAll(buildDisplayItems(s));
+					}
+					adapter.notifyDataSetChanged();
+				});
+			} catch (Exception e) {
+				// Ranking failed — keep unranked results (graceful degradation)
+			}
+		});
 	}
 
 	@Override

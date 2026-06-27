@@ -688,7 +688,7 @@ public class AIPersonalizationManager {
 	/**
 	 * Strip HTML tags from Mastodon post content for cleaner LLM input.
 	 */
-	private static String stripHtml(String html) {
+	public static String stripHtml(String html) {
 		if (html == null) return "";
 		// Basic HTML tag removal — Mastodon content is simple HTML
 		String text = html.replaceAll("<[^>]+>", "");

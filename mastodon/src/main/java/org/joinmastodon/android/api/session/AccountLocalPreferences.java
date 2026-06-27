@@ -54,6 +54,7 @@ public class AccountLocalPreferences{
 	public ArrayList<AITopic> aiTopics;       // inferred + user topics
 	public long aiTopicsLastUpdated;          // timestamp of last inference (0 = never)
 	public String aiEmbeddingModel;           // embedding model, e.g. "openai/text-embedding-3-small"
+	public String aiTimelineSource;           // "federated" | "local", default "federated"
 
 
 	// MOSHIDON: this is also ours
@@ -97,6 +98,7 @@ public class AccountLocalPreferences{
 		aiTopics=fromJson(prefs.getString("aiTopics", null), aiTopicsType, new ArrayList<>());
 		aiTopicsLastUpdated=prefs.getLong("aiTopicsLastUpdated", 0);
 		aiEmbeddingModel=prefs.getString("aiEmbeddingModel", "openai/text-embedding-3-small");
+		aiTimelineSource=prefs.getString("aiTimelineSource", "federated");
 
 	}
 
@@ -139,6 +141,7 @@ public class AccountLocalPreferences{
 				.putString("aiTopics", gson.toJson(aiTopics))
 				.putLong("aiTopicsLastUpdated", aiTopicsLastUpdated)
 			.putString("aiEmbeddingModel", aiEmbeddingModel)
+			.putString("aiTimelineSource", aiTimelineSource)
 
 				.apply();
 	}
