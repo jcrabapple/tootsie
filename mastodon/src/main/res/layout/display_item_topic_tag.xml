@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="horizontal"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:clipToPadding="false"
+	android:paddingLeft="56dp"
+	android:paddingRight="16dp"
+	android:paddingTop="4dp"
+	android:paddingBottom="0dp">
+
+	<TextView
+		android:id="@+id/topic_label"
+		android:layout_width="wrap_content"
+		android:layout_height="20dp"
+		android:gravity="center_vertical"
+		android:textAppearance="@style/m3_label_small"
+		android:textColor="?colorM3OnSecondaryContainer"
+		android:backgroundTint="?colorM3SecondaryContainer"
+		android:background="@drawable/bg_topic_tag"
+		android:paddingLeft="8dp"
+		android:paddingRight="8dp"
+		android:singleLine="true"
+		android:ellipsize="end"
+		tools:text="🌿 Linux"/>
+
+</LinearLayout>

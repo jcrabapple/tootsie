@@ -120,6 +120,8 @@ public abstract class StatusDisplayItem{
 			case COLLECTION_CARD -> new CollectionCardStatusDisplayItem.Holder(activity, parent);
 			// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — collection notification row
 			case COLLECTION_NOTIFICATION -> new CollectionNotificationStatusDisplayItem.Holder(activity, parent);
+			// TOOTSIE: AI Personalization — topic tag chip
+			case TOPIC_TAG -> new TopicTagStatusDisplayItem.Holder(activity, parent);
 		};
 	}
 
@@ -317,7 +319,9 @@ public abstract class StatusDisplayItem{
 		// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — compact collection card for Featured tab
 		COLLECTION_CARD,
 		// TOOTSIE: FEP-7aa9 / Mastodon 4.6 — collection notification row
-		COLLECTION_NOTIFICATION
+		COLLECTION_NOTIFICATION,
+		// TOOTSIE: AI Personalization — topic tag chip
+		TOPIC_TAG
 	}
 
 	public static abstract class Holder<T> extends BindableViewHolder<T> implements UsableRecyclerView.DisableableClickable{

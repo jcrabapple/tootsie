@@ -1,5 +1,6 @@
 package org.joinmastodon.android.fragments.discover;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -14,6 +15,8 @@ import org.joinmastodon.android.model.AITopic;
 import org.joinmastodon.android.model.FilterContext;
 import org.joinmastodon.android.model.SearchResults;
 import org.joinmastodon.android.model.Status;
+import org.joinmastodon.android.ui.displayitems.StatusDisplayItem;
+import org.joinmastodon.android.ui.displayitems.TopicTagStatusDisplayItem;
 import org.joinmastodon.android.utils.ProvidesAssistContent;
 
 import java.util.ArrayList;
@@ -21,7 +24,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import me.grishka.appkit.api.Callback;
@@ -37,9 +42,24 @@ public class PersonalTimelineFragment extends StatusListFragment
 	private int searchOffset = 0;
 	private static final int POSTS_PER_TOPIC = 10;
 
+	/** Maps status ID → list of topic labels that matched this post. */
+	private final Map<String, List<String>> topicMap = new ConcurrentHashMap<>();
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	protected List<StatusDisplayItem> buildDisplayItems(Status s) {
+		List<StatusDisplayItem> items = new ArrayList<>();
+		Status content = s.reblog != null ? s.reblog : s;
+		List<String> topics = topicMap.get(content.id);
+		if (topics != null && !topics.isEmpty()) {
+			items.add(new TopicTagStatusDisplayItem(content.id, null, getContext(), topics));
+		}
+		items.addAll(super.buildDisplayItems(s));
+		return items;
 	}
 
 	@Override
@@ -89,6 +109,8 @@ public class PersonalTimelineFragment extends StatusListFragment
 									if (seenIds.add(content.id)) {
 										merged.add(s);
 									}
+									// Track which topic(s) matched this post
+									topicMap.computeIfAbsent(content.id, k -> new ArrayList<>()).add(topic);
 								}
 							}
 							if (remaining.decrementAndGet() == 0) {
