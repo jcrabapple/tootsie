@@ -40,6 +40,7 @@ public class SettingsAIPersonalizationFragment extends BaseSettingsFragment<Void
 	private ListItem<Void> apiUrlItem;
 	private ListItem<Void> apiKeyItem;
 	private ListItem<Void> modelItem;
+	private ListItem<Void> embeddingModelItem;
 	private ListItem<Void> reinferItem;
 	private ListItem<Void> addTopicItem;
 	private ListItem<Void> lastUpdatedItem;
@@ -115,6 +116,16 @@ public class SettingsAIPersonalizationFragment extends BaseSettingsFragment<Void
 				R.drawable.ic_fluent_bot_24_regular,
 				this::onModelClick);
 		items.add(modelItem);
+
+		// Embedding Model
+		String embeddingModelDisplay = prefs.aiEmbeddingModel != null
+				? prefs.aiEmbeddingModel : "openai/text-embedding-3-small";
+		embeddingModelItem = new ListItem<>(
+				getString(R.string.mo_settings_ai_embedding_model),
+				embeddingModelDisplay,
+				R.drawable.ic_fluent_bot_24_regular,
+				this::onEmbeddingModelClick);
+		items.add(embeddingModelItem);
 
 		// Section: Inferred Topics
 		items.add(new SectionHeaderListItem(R.string.mo_settings_ai_inferred_topics));
@@ -260,6 +271,33 @@ public class SettingsAIPersonalizationFragment extends BaseSettingsFragment<Void
 				.setTitle(R.string.mo_settings_ai_model)
 				.setPositiveButton(R.string.mo_settings_ai_select_model, (d, w) -> openModelPicker())
 				.setNegativeButton(R.string.mo_settings_ai_enter_model_manually, (d, w) -> openManualModelEntry())
+				.show();
+	}
+
+	private void onEmbeddingModelClick(ListItem<?> item) {
+		EditText input = new EditText(getActivity());
+		if (prefs.aiEmbeddingModel != null) {
+			input.setText(prefs.aiEmbeddingModel);
+		} else {
+			input.setText("openai/text-embedding-3-small");
+		}
+		input.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+		LinearLayout container = createDialogContainer(input);
+
+		new M3AlertDialogBuilder(getActivity())
+				.setTitle(R.string.mo_settings_ai_embedding_model)
+				.setMessage(getString(R.string.mo_settings_ai_embedding_model_hint))
+				.setView(container)
+				.setPositiveButton(R.string.ok, (d, w) -> {
+					String value = input.getText().toString().trim();
+					if (!value.isEmpty()) {
+						prefs.aiEmbeddingModel = value;
+						prefs.save();
+						embeddingModelItem.subtitle = value;
+						rebindItem(embeddingModelItem);
+					}
+				})
+				.setNegativeButton(R.string.cancel, null)
 				.show();
 	}
 

@@ -165,29 +165,26 @@ public class PersonalTimelineFragment extends StatusListFragment
 		// Show results immediately — user sees posts right away
 		onDataLoaded(result, true);
 
-		// If API key is configured, refine in background via LLM
+		// If API key is configured, rank by embedding similarity in background
 		AccountLocalPreferences prefs = getLocalPrefs();
 		if (prefs.aiApiKey != null && !prefs.aiApiKey.isBlank()) {
-			AIPersonalizationManager.filterPosts(accountID, result, topicMap,
-					this::applyFilteredResults,
+			AIPersonalizationManager.rankCandidates(accountID, result,
+					this::applyRankedResults,
 					error -> {
-						// Filtering failed — keep the unfiltered results, no action needed
+						// Ranking failed — keep unranked results
 					});
 		}
 	}
 
-	private void applyFilteredResults(List<Status> filtered) {
-		if (getActivity() == null || filtered.isEmpty()) return;
+	private void applyRankedResults(List<AIPersonalizationManager.RankedPost> ranked) {
+		if (getActivity() == null || ranked.isEmpty()) return;
 
-		// Only update if the filtered list is different (shorter) than what's currently shown
-		if (filtered.size() >= data.size()) return;
-
-		// Replace displayed data with filtered results
+		// Replace displayed data with ranked results (sorted by similarity)
 		data.clear();
 		displayItems.clear();
-		for (Status s : filtered) {
-			data.add(s);
-			displayItems.addAll(buildDisplayItems(s));
+		for (AIPersonalizationManager.RankedPost rp : ranked) {
+			data.add(rp.status);
+			displayItems.addAll(buildDisplayItems(rp.status));
 		}
 		adapter.notifyDataSetChanged();
 	}

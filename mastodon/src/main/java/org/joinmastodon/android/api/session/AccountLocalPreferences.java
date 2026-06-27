@@ -53,6 +53,7 @@ public class AccountLocalPreferences{
 	public int aiPostCount;           // 5-25, default 10
 	public ArrayList<AITopic> aiTopics;       // inferred + user topics
 	public long aiTopicsLastUpdated;          // timestamp of last inference (0 = never)
+	public String aiEmbeddingModel;           // embedding model, e.g. "openai/text-embedding-3-small"
 
 
 	// MOSHIDON: this is also ours
@@ -95,6 +96,7 @@ public class AccountLocalPreferences{
 		aiPostCount=prefs.getInt("aiPostCount", 10);
 		aiTopics=fromJson(prefs.getString("aiTopics", null), aiTopicsType, new ArrayList<>());
 		aiTopicsLastUpdated=prefs.getLong("aiTopicsLastUpdated", 0);
+		aiEmbeddingModel=prefs.getString("aiEmbeddingModel", "openai/text-embedding-3-small");
 
 	}
 
@@ -136,6 +138,7 @@ public class AccountLocalPreferences{
 				.putInt("aiPostCount", aiPostCount)
 				.putString("aiTopics", gson.toJson(aiTopics))
 				.putLong("aiTopicsLastUpdated", aiTopicsLastUpdated)
+			.putString("aiEmbeddingModel", aiEmbeddingModel)
 
 				.apply();
 	}

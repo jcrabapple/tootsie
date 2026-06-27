@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import org.joinmastodon.android.MastodonApp;
 import org.joinmastodon.android.api.MastodonAPIController;
 import org.joinmastodon.android.api.requests.accounts.GetAccountStatuses;
 import org.joinmastodon.android.api.requests.statuses.GetFavoritedStatuses;
@@ -95,7 +96,8 @@ public class AIPersonalizationManager {
 			"{\n  \"topics\": [\"topic1\", \"topic2\", \"topic3\", ...]\n}\n\n" +
 			"Aim for 5-15 topics. Order by estimated relevance (most prominent first).";
 
-	// Post filtering prompt (sent search results + topics, returns only genuinely relevant post IDs)
+	// Post filtering prompt (DEPRECATED — replaced by embedding-based ranking)
+	@Deprecated
 	private static final String POST_FILTER_PROMPT =
 			"\n\nYour task is to filter search results from a Mastodon timeline.\n\n" +
 			"You will receive a JSON object containing:\n" +
@@ -201,6 +203,11 @@ public class AIPersonalizationManager {
 	private static void callLLMForTopics(String accountID, List<Status> favorites, List<Status> boosts,
 										String apiUrl, String apiKey, String model,
 										Consumer<List<AITopic>> onSuccess, Consumer<String> onError) {
+		// Clear old embeddings so they get re-embedded with fresh vectors
+		EmbeddingDatabase db = EmbeddingDatabase.getInstance(
+				MastodonApp.context);
+		db.clearEmbeddings(accountID);
+
 		// Build the user content JSON
 		JsonObject payload = new JsonObject();
 		payload.add("favorites", buildPostArray(favorites));
@@ -242,6 +249,11 @@ public class AIPersonalizationManager {
 				prefs.aiTopicsLastUpdated = System.currentTimeMillis();
 				prefs.save();
 
+				// Embed favorites for vector ranking (fire-and-forget)
+				embedFavorites(accountID, favorites, boosts,
+						count -> Log.d(TAG, "Cached " + count + " embeddings after topic inference"),
+						error -> Log.w(TAG, "Embedding after inference failed: " + error));
+
 				List<AITopic> result = new ArrayList<>(merged);
 				uiHandler.post(() -> onSuccess.accept(result));
 			} catch (Exception e) {
@@ -272,7 +284,11 @@ public class AIPersonalizationManager {
 	 * Filter search results through the LLM to remove false positives.
 	 * Each post is tagged with its matched topic so the LLM can verify relevance.
 	 * Callbacks run on the UI thread.
+	 *
+	 * @deprecated Replaced by {@link #rankCandidates} which uses embedding-based similarity.
+	 *             Kept for reference. Will be removed in a future version.
 	 */
+	@Deprecated
 	public static void filterPosts(String accountID, List<Status> posts, Map<String, List<String>> topicMap,
 									Consumer<List<Status>> onSuccess, Consumer<String> onError) {
 		AccountSession session = AccountSessionManager.getInstance().getAccount(accountID);
@@ -363,6 +379,201 @@ public class AIPersonalizationManager {
 			ids.add(el.getAsString());
 		}
 		return ids;
+	}
+
+
+	// ========== Embedding-Based Ranking ==========
+
+	/**
+	 * Embed the user's favorites and boosts and cache vectors in SQLite.
+	 * Called after topic inference or when embeddings are stale.
+	 * Only embeds posts that don't already have cached embeddings.
+	 * Callbacks run on UI thread.
+	 */
+	public static void embedFavorites(String accountID, List<Status> favorites, List<Status> boosts,
+									  Consumer<Integer> onSuccess, Consumer<String> onError) {
+		AccountSession session = AccountSessionManager.getInstance().getAccount(accountID);
+		if (session == null) {
+			uiHandler.post(() -> onError.accept("No active session"));
+			return;
+		}
+
+		AccountLocalPreferences prefs = session.getLocalPreferences();
+		String apiKey = prefs.aiApiKey;
+		String apiUrl = prefs.aiApiUrl;
+		String model = prefs.aiEmbeddingModel;
+
+		if (apiKey == null || apiKey.isBlank()) {
+			uiHandler.post(() -> onError.accept("No API key configured"));
+			return;
+		}
+
+		// Combine favorites and boosts, strip HTML
+		List<Status> allPosts = new ArrayList<>();
+		List<String> sources = new ArrayList<>();
+		for (Status s : favorites) {
+			Status actual = s.reblog != null ? s.reblog : s;
+			allPosts.add(actual);
+			sources.add("favorite");
+		}
+		for (Status s : boosts) {
+			Status actual = s.reblog != null ? s.reblog : s;
+			allPosts.add(actual);
+			sources.add("boost");
+		}
+
+		if (allPosts.isEmpty()) {
+			uiHandler.post(() -> onSuccess.accept(0));
+			return;
+		}
+
+		// Check which posts already have cached embeddings
+		EmbeddingDatabase db = EmbeddingDatabase.getInstance(
+				MastodonApp.context);
+		List<String> cachedIds = db.getEmbeddedStatusIds(accountID);
+		Set<String> cachedSet = new HashSet<>(cachedIds);
+
+		// Filter to only posts that need embedding
+		List<Status> toEmbed = new ArrayList<>();
+		List<String> toEmbedSources = new ArrayList<>();
+		List<String> toEmbedIds = new ArrayList<>();
+		for (int i = 0; i < allPosts.size(); i++) {
+			Status s = allPosts.get(i);
+			if (!cachedSet.contains(s.id)) {
+				toEmbed.add(s);
+				toEmbedSources.add(sources.get(i));
+				toEmbedIds.add(s.id);
+			}
+		}
+
+		if (toEmbed.isEmpty()) {
+			uiHandler.post(() -> onSuccess.accept(cachedIds.size()));
+			return;
+		}
+
+		// Build text for embedding (strip HTML)
+		List<String> texts = new ArrayList<>();
+		for (Status s : toEmbed) {
+			texts.add(stripHtml(s.content));
+		}
+
+		// Embed on background thread
+		MastodonAPIController.runInBackground(() -> {
+			try {
+				List<float[]> vectors = EmbeddingClient.embedBatch(apiUrl, apiKey, model, texts);
+
+				// Cache in SQLite
+				db.putEmbeddings(accountID, toEmbedIds, vectors, toEmbedSources.get(0));
+
+				int totalCached = cachedIds.size() + vectors.size();
+				Log.d(TAG, "Embedded " + toEmbed.size() + " posts, " + totalCached + " total cached");
+				uiHandler.post(() -> onSuccess.accept(totalCached));
+			} catch (Exception e) {
+				Log.e(TAG, "Embedding favorites failed", e);
+				uiHandler.post(() -> onError.accept(e.getMessage() != null ? e.getMessage() : "Embedding failed"));
+			}
+		});
+	}
+
+	/**
+	 * Rank candidate posts by similarity to the user's cached interest embeddings.
+	 * Replaces the old LLM-based filterPosts() method.
+	 *
+	 * For each candidate, computes max cosine similarity against all cached favorites.
+	 * Returns candidates sorted by similarity score (highest first).
+	 * Callbacks run on UI thread.
+	 */
+	public static void rankCandidates(String accountID, List<Status> candidates,
+									  Consumer<List<RankedPost>> onSuccess, Consumer<String> onError) {
+		AccountSession session = AccountSessionManager.getInstance().getAccount(accountID);
+		if (session == null) {
+			uiHandler.post(() -> onError.accept("No active session"));
+			return;
+		}
+
+		AccountLocalPreferences prefs = session.getLocalPreferences();
+		String apiKey = prefs.aiApiKey;
+		String apiUrl = prefs.aiApiUrl;
+		String model = prefs.aiEmbeddingModel;
+
+		if (apiKey == null || apiKey.isBlank()) {
+			// No API key — return candidates unranked (by recency)
+			List<RankedPost> unranked = new ArrayList<>();
+			for (Status s : candidates) {
+				unranked.add(new RankedPost(s, 0f));
+			}
+			uiHandler.post(() -> onSuccess.accept(unranked));
+			return;
+		}
+
+		// Load cached interest vectors
+		EmbeddingDatabase db = EmbeddingDatabase.getInstance(
+				MastodonApp.context);
+		Map<String, float[]> interestVectors = db.getEmbeddings(accountID);
+
+		if (interestVectors.isEmpty()) {
+			// No cached embeddings — return unranked
+			List<RankedPost> unranked = new ArrayList<>();
+			for (Status s : candidates) {
+				unranked.add(new RankedPost(s, 0f));
+			}
+			uiHandler.post(() -> onSuccess.accept(unranked));
+			return;
+		}
+
+		// Build text for candidates
+		List<String> texts = new ArrayList<>();
+		for (Status s : candidates) {
+			Status actual = s.reblog != null ? s.reblog : s;
+			texts.add(stripHtml(actual.content));
+		}
+
+		// Embed candidates on background thread
+		MastodonAPIController.runInBackground(() -> {
+			try {
+				List<float[]> candidateVectors = EmbeddingClient.embedBatch(apiUrl, apiKey, model, texts);
+
+				// Compute similarity: for each candidate, find max similarity to any interest
+				List<RankedPost> ranked = new ArrayList<>();
+				for (int i = 0; i < candidates.size(); i++) {
+					float maxSim = 0f;
+					float[] cVec = candidateVectors.get(i);
+					if (cVec != null) {
+						for (float[] iVec : interestVectors.values()) {
+							float sim = EmbeddingClient.cosineSimilarity(cVec, iVec);
+							if (sim > maxSim) maxSim = sim;
+						}
+					}
+					ranked.add(new RankedPost(candidates.get(i), maxSim));
+				}
+
+				// Sort by similarity descending
+				ranked.sort((a, b) -> Float.compare(b.similarity, a.similarity));
+
+				uiHandler.post(() -> onSuccess.accept(ranked));
+			} catch (Exception e) {
+				Log.e(TAG, "Candidate ranking failed", e);
+				// On failure, return unranked (graceful degradation)
+				List<RankedPost> unranked = new ArrayList<>();
+				for (Status s : candidates) {
+					unranked.add(new RankedPost(s, 0f));
+				}
+				uiHandler.post(() -> onSuccess.accept(unranked));
+			}
+		});
+	}
+
+	/**
+	 * A post with its computed similarity score.
+	 */
+	public static class RankedPost {
+		public final Status status;
+		public final float similarity; // 0.0 to 1.0
+
+		public RankedPost(Status status, float similarity) {
+			this.status = status;
+			this.similarity = similarity;
+		}
 	}
 
 

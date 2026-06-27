@@ -156,6 +156,8 @@
 	<string name="mo_settings_ai_select_model">Select Model</string>
 	<string name="mo_settings_ai_enter_model_manually">Enter model ID manually</string>
 	<string name="mo_settings_ai_model_id">Model ID</string>
+	<string name="mo_settings_ai_embedding_model">Embedding Model</string>
+	<string name="mo_settings_ai_embedding_model_hint">Model used for semantic ranking of posts. Default: openai/text-embedding-3-small. Uses the same API key as your LLM provider.</string>
 	<string name="mo_settings_ai_inferred_topics">Inferred Topics</string>
 	<string name="mo_settings_ai_no_topics">No topics inferred yet. Favorite and boost posts to help the AI learn your interests.</string>
 	<string name="mo_settings_ai_add_topic">Add custom topic</string>
