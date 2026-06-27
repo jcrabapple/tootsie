@@ -220,7 +220,7 @@ public class PersonalTimelineFragment extends StatusListFragment
 				int maxResults = Math.min(ranked.size(), 20);
 
 				// Build topic map from actual similarity scores
-				// Only assign topics whose interest vectors are closest to each post
+				// Use enabled topic labels (not status IDs) as display names
 				Map<String, List<String>> newTopicMap = new java.util.concurrent.ConcurrentHashMap<>();
 				for (int i = 0; i < candidateVectors.size(); i++) {
 					float[] cVec = candidateVectors.get(i);
@@ -228,16 +228,17 @@ public class PersonalTimelineFragment extends StatusListFragment
 					Status s = candidates.get(i);
 					Status actual = s.reblog != null ? s.reblog : s;
 
-					// Find which interest vectors are closest (top 2 topics)
-					List<String> matchedTopics = new ArrayList<>();
-					for (Map.Entry<String, float[]> entry : interestVectors.entrySet()) {
-						float sim = EmbeddingClient.cosineSimilarity(cVec, entry.getValue());
-						if (sim > 0.25f) {
-							matchedTopics.add(entry.getKey());
-						}
+					// Find the best-matching interest vector
+					float bestSim = 0f;
+					for (float[] iVec : interestVectors.values()) {
+						float sim = EmbeddingClient.cosineSimilarity(cVec, iVec);
+						if (sim > bestSim) bestSim = sim;
 					}
-					if (!matchedTopics.isEmpty()) {
-						newTopicMap.put(actual.id, matchedTopics);
+
+					// If similarity is high enough, assign all enabled topics as labels
+					// (we can't map to individual topics since embeddings are per-post, not per-topic)
+					if (bestSim > 0.25f && !enabledTopics.isEmpty()) {
+						newTopicMap.put(actual.id, new ArrayList<>(enabledTopics));
 					}
 				}
 
