@@ -194,10 +194,19 @@ public class PersonalTimelineFragment extends StatusListFragment
 		// Load dismissed IDs for feedback
 		Set<String> dismissedIds = FeedbackTracker.getDismissedIds(accountID);
 
+		// Embed topic labels for per-topic matching
+		List<String> topicLabels = new ArrayList<>(enabledTopics);
+
 		MastodonAPIController.runInBackground(() -> {
 			try {
-				// Embed all candidates in one batch call
-				List<float[]> candidateVectors = EmbeddingClient.embedBatch(apiUrl, apiKey, model, texts);
+				// Embed all candidates + topic labels in one batch call
+				List<String> allTexts = new ArrayList<>(texts);
+				allTexts.addAll(topicLabels);
+				List<float[]> allVectors = EmbeddingClient.embedBatch(apiUrl, apiKey, model, allTexts);
+
+				// Split: first N are candidates, last M are topic vectors
+				List<float[]> candidateVectors = allVectors.subList(0, texts.size());
+				List<float[]> topicVectors = allVectors.subList(texts.size(), allVectors.size());
 
 				// Compute max similarity per candidate against interest vectors
 				List<Float> similarities = new ArrayList<>();
@@ -219,8 +228,7 @@ public class PersonalTimelineFragment extends StatusListFragment
 				// Cap to top 20 results
 				int maxResults = Math.min(ranked.size(), 20);
 
-				// Build topic map from actual similarity scores
-				// Use enabled topic labels (not status IDs) as display names
+				// Build per-post topic tags by comparing each post against each topic vector
 				Map<String, List<String>> newTopicMap = new java.util.concurrent.ConcurrentHashMap<>();
 				for (int i = 0; i < candidateVectors.size(); i++) {
 					float[] cVec = candidateVectors.get(i);
@@ -228,17 +236,15 @@ public class PersonalTimelineFragment extends StatusListFragment
 					Status s = candidates.get(i);
 					Status actual = s.reblog != null ? s.reblog : s;
 
-					// Find the best-matching interest vector
-					float bestSim = 0f;
-					for (float[] iVec : interestVectors.values()) {
-						float sim = EmbeddingClient.cosineSimilarity(cVec, iVec);
-						if (sim > bestSim) bestSim = sim;
+					List<String> matchedTopics = new ArrayList<>();
+					for (int t = 0; t < topicVectors.size(); t++) {
+						float sim = EmbeddingClient.cosineSimilarity(cVec, topicVectors.get(t));
+						if (sim > 0.35f) {
+							matchedTopics.add(topicLabels.get(t));
+						}
 					}
-
-					// If similarity is high enough, assign all enabled topics as labels
-					// (we can't map to individual topics since embeddings are per-post, not per-topic)
-					if (bestSim > 0.25f && !enabledTopics.isEmpty()) {
-						newTopicMap.put(actual.id, new ArrayList<>(enabledTopics));
+					if (!matchedTopics.isEmpty()) {
+						newTopicMap.put(actual.id, matchedTopics);
 					}
 				}
 
