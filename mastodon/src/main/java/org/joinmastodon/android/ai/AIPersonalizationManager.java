@@ -402,6 +402,8 @@ public class AIPersonalizationManager {
 	private static String executeLLMRequest(String apiUrl, String apiKey, JsonObject requestBody) throws IOException {
 		String chatUrl = apiUrl.endsWith("/") ? apiUrl + "chat/completions" : apiUrl + "/chat/completions";
 
+		Log.d(TAG, "LLM request to " + chatUrl + " with key length=" + (apiKey != null ? apiKey.length() : 0));
+
 		Request request = new Request.Builder()
 				.url(chatUrl)
 				.header("Authorization", "Bearer " + apiKey)
@@ -412,6 +414,10 @@ public class AIPersonalizationManager {
 		try (Response response = llmClient.newCall(request).execute()) {
 			if (!response.isSuccessful()) {
 				String errorBody = response.body() != null ? response.body().string() : "";
+				Log.e(TAG, "LLM error " + response.code() + ": " + errorBody);
+				if (response.code() == 401) {
+					throw new IOException("Authentication failed — check your API key in Settings → AI Personalization");
+				}
 				throw new IOException("HTTP " + response.code() + ": " + response.message() + " — " + errorBody);
 			}
 			return response.body() != null ? response.body().string() : "{}";
