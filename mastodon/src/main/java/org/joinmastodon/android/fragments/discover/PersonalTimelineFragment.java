@@ -1,6 +1,5 @@
 package org.joinmastodon.android.fragments.discover;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -22,6 +21,7 @@ import org.joinmastodon.android.utils.ProvidesAssistContent;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -36,6 +36,9 @@ import me.grishka.appkit.api.ErrorResponse;
 /**
  * Personal timeline: searches Mastodon globally for posts matching the user's
  * enabled AI topics, merges and dedupes results across topics.
+ *
+ * Results are shown immediately after search (sorted by date), then optionally
+ * refined through LLM filtering in the background to remove false positives.
  */
 public class PersonalTimelineFragment extends StatusListFragment
 		implements ProvidesAssistContent.ProvidesWebUri {
@@ -149,25 +152,44 @@ public class PersonalTimelineFragment extends StatusListFragment
 			AccountSessionManager.get(accountID).filterStatuses(result, getFilterContext());
 		}
 
+		// Sort by date descending (newest first)
+		result.sort(Comparator.comparing((Status s) -> s.createdAt).reversed());
+
+		searchOffset += POSTS_PER_TOPIC;
+
 		if (result.isEmpty()) {
-			boolean hasMore = false;
-			onDataLoaded(result, hasMore);
+			onDataLoaded(result, false);
 			return;
 		}
 
-		// Send through LLM to remove false positives (e.g. "space" in "creates space" matched "Space Exploration")
-		AIPersonalizationManager.filterPosts(accountID, result, topicMap,
-				filtered -> {
-					if (getActivity() == null) return;
-					searchOffset += POSTS_PER_TOPIC;
-					onDataLoaded(filtered, !filtered.isEmpty());
-				},
-				error -> {
-					// On LLM failure, fall back to unfiltered search results
-					if (getActivity() == null) return;
-					searchOffset += POSTS_PER_TOPIC;
-					onDataLoaded(result, !result.isEmpty());
-				});
+		// Show results immediately — user sees posts right away
+		onDataLoaded(result, true);
+
+		// If API key is configured, refine in background via LLM
+		AccountLocalPreferences prefs = getLocalPrefs();
+		if (prefs.aiApiKey != null && !prefs.aiApiKey.isBlank()) {
+			AIPersonalizationManager.filterPosts(accountID, result, topicMap,
+					this::applyFilteredResults,
+					error -> {
+						// Filtering failed — keep the unfiltered results, no action needed
+					});
+		}
+	}
+
+	private void applyFilteredResults(List<Status> filtered) {
+		if (getActivity() == null || filtered.isEmpty()) return;
+
+		// Only update if the filtered list is different (shorter) than what's currently shown
+		if (filtered.size() >= data.size()) return;
+
+		// Replace displayed data with filtered results
+		data.clear();
+		displayItems.clear();
+		for (Status s : filtered) {
+			data.add(s);
+			displayItems.addAll(buildDisplayItems(s));
+		}
+		adapter.notifyDataSetChanged();
 	}
 
 	@Override
